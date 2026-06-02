@@ -46,55 +46,44 @@
         </li>
 
         <!-- Nav Item - Alerts -->
+        @if(auth()->check() && auth()->user()->users_role === 'staf_inventory')
         <li class="nav-item dropdown no-arrow mx-1">
             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-bell fa-fw"></i>
                 <!-- Counter - Alerts -->
-                <span class="badge badge-danger badge-counter">3+</span>
+                @if($activeRopAlertsCount > 0)
+                    <span class="badge badge-danger badge-counter">{{ $activeRopAlertsCount }}</span>
+                @endif
             </a>
             <!-- Dropdown - Alerts -->
             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="alertsDropdown">
-                <h6 class="dropdown-header">
-                    Alerts Center
+                <h6 class="dropdown-header bg-danger border-danger">
+                    Peringatan Reorder Point (ROP)
                 </h6>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-primary">
-                            <i class="fas fa-file-alt text-white"></i>
+                @forelse($activeRopAlerts as $alert)
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('notifikasi-rop.index') }}">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-danger text-white">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <div class="small text-gray-500">December 12, 2019</div>
-                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                    </div>
-                </a>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-success">
-                            <i class="fas fa-donate text-white"></i>
+                        <div>
+                            <div class="small text-gray-500">{{ $alert->rop_created_at ? $alert->rop_created_at->diffForHumans() : '' }}</div>
+                            <span class="font-weight-bold text-gray-900">{{ $alert->sukuCadang->suku_cadang_nama ?? 'Suku Cadang' }}</span> kritis!
+                            <div class="small text-danger">Stok: {{ $alert->rop_stok_saat_notif }} (Batas ROP: {{ $alert->rop_rop_saat_notif }})</div>
                         </div>
+                    </a>
+                @empty
+                    <div class="dropdown-item text-center text-gray-500 py-3 small">
+                        <i class="fas fa-check-circle text-success mr-1"></i> Semua stok dalam batas aman.
                     </div>
-                    <div>
-                        <div class="small text-gray-500">December 7, 2019</div>
-                        $290.29 has been deposited into your account!
-                    </div>
-                </a>
-                <a class="dropdown-item d-flex align-items-center" href="#">
-                    <div class="mr-3">
-                        <div class="icon-circle bg-warning">
-                            <i class="fas fa-exclamation-triangle text-white"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="small text-gray-500">December 2, 2019</div>
-                        Spending Alert: We've noticed unusually high spending for your account.
-                    </div>
-                </a>
-                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                @endforelse
+                <a class="dropdown-item text-center small text-gray-500" href="{{ route('notifikasi-rop.index') }}">Lihat Semua Peringatan</a>
             </div>
         </li>
+        @endif
 
         <!-- Nav Item - Messages -->
         <li class="nav-item dropdown no-arrow mx-1">
@@ -176,7 +165,7 @@
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{{ route('profile') }}">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                     Profile
                 </a>

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('kendaraan_id');
             $table->string('no_dokumen', 100);
             $table->string('no_surat_jalan', 100);
+            $table->string('tujuan_pt', 150);
             $table->integer('jumlah_diminta');
             $table->integer('jumlah_terpenuhi');
             $table->enum('status', ['terpenuhi', 'sebagian', 'ditolak']);

@@ -24,6 +24,7 @@ class TransaksiKeluar extends Model
         'kendaraan_id',
         'no_dokumen',
         'no_surat_jalan',
+        'tujuan_pt',
         'jumlah_diminta',
         'jumlah_terpenuhi',
         'status',

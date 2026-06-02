@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('transaksi_masuk_suku_cadang_id');
             $table->unsignedInteger('transaksi_masuk_supplier_id');
             $table->unsignedInteger('transaksi_masuk_users_id');
-            $table->unsignedInteger('transaksi_masuk_kendaraan_id');
+            $table->unsignedInteger('transaksi_masuk_kendaraan_id')->nullable();
             $table->string('transaksi_masuk_no_dokumen', 100);
             $table->string('transaksi_masuk_no_surat_jalan', 100);
             $table->integer('transaksi_masuk_jumlah');

@@ -14,9 +14,10 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        // Jika sudah login, arahkan ke dashboard
+        // Jika sudah login, arahkan ke halaman sesuai role
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            $route = $this->getRedirectRouteForRole(Auth::user()->users_role);
+            return redirect()->route($route);
         }
 
         return view('auth.login');
@@ -56,8 +57,26 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'))
+        $route = $this->getRedirectRouteForRole($user->users_role);
+        return redirect()->intended(route($route))
             ->with('success', 'Selamat datang, ' . $user->users_username . '!');
+    }
+
+    /**
+     * Dapatkan nama route tujuan redireksi berdasarkan role.
+     */
+    protected function getRedirectRouteForRole($role)
+    {
+        switch ($role) {
+            case 'spv':
+                return 'dashboard';
+            case 'staf_inventory':
+                return 'suku-cadang.index';
+            case 'admin_gudang':
+                return 'transaksi-masuk.index';
+            default:
+                return 'login';
+        }
     }
 
     /**

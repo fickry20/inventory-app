@@ -1,0 +1,118 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Supplier;
+use Illuminate\Http\Request;
+
+class SupplierController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+
+        $suppliers = Supplier::query()
+            ->when($search, function ($query, $search) {
+                $query->where('supplier_nama', 'like', "%{$search}%")
+                    ->orWhere('supplier_plat_kendaraan', 'like', "%{$search}%")
+                    ->orWhere('supplier_nama_driver', 'like', "%{$search}%");
+            })
+            ->latest('supplier_created_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('supplier.index', compact('suppliers', 'search'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('supplier.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'supplier_nama'           => 'required|string|max:150',
+            'supplier_kontak'         => 'required|string|max:100',
+            'supplier_alamat'         => 'required|string',
+            'supplier_plat_kendaraan' => 'required|string|max:20',
+            'supplier_nama_driver'    => 'required|string|max:150',
+        ], [
+            'supplier_nama.required'           => 'Nama supplier wajib diisi.',
+            'supplier_nama.max'                => 'Nama supplier maksimal 150 karakter.',
+            'supplier_kontak.required'         => 'Kontak supplier wajib diisi.',
+            'supplier_kontak.max'              => 'Kontak supplier maksimal 100 karakter.',
+            'supplier_alamat.required'         => 'Alamat supplier wajib diisi.',
+            'supplier_plat_kendaraan.required' => 'Plat kendaraan supplier wajib diisi.',
+            'supplier_plat_kendaraan.max'      => 'Plat kendaraan supplier maksimal 20 karakter.',
+            'supplier_nama_driver.required'    => 'Nama driver wajib diisi.',
+            'supplier_nama_driver.max'         => 'Nama driver maksimal 150 karakter.',
+        ]);
+
+        Supplier::create($validated);
+
+        return redirect()->route('supplier.index')
+            ->with('success', 'Data supplier berhasil ditambahkan.');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $supplier = Supplier::findOrFail($id);
+        return view('supplier.edit', compact('supplier'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $supplier = Supplier::findOrFail($id);
+
+        $validated = $request->validate([
+            'supplier_nama'           => 'required|string|max:150',
+            'supplier_kontak'         => 'required|string|max:100',
+            'supplier_alamat'         => 'required|string',
+            'supplier_plat_kendaraan' => 'required|string|max:20',
+            'supplier_nama_driver'    => 'required|string|max:150',
+        ], [
+            'supplier_nama.required'           => 'Nama supplier wajib diisi.',
+            'supplier_nama.max'                => 'Nama supplier maksimal 150 karakter.',
+            'supplier_kontak.required'         => 'Kontak supplier wajib diisi.',
+            'supplier_kontak.max'              => 'Kontak supplier maksimal 100 karakter.',
+            'supplier_alamat.required'         => 'Alamat supplier wajib diisi.',
+            'supplier_plat_kendaraan.required' => 'Plat kendaraan supplier wajib diisi.',
+            'supplier_plat_kendaraan.max'      => 'Plat kendaraan supplier maksimal 20 karakter.',
+            'supplier_nama_driver.required'    => 'Nama driver wajib diisi.',
+            'supplier_nama_driver.max'         => 'Nama driver maksimal 150 karakter.',
+        ]);
+
+        $supplier->update($validated);
+
+        return redirect()->route('supplier.index')
+            ->with('success', 'Data supplier berhasil diperbarui.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $supplier = Supplier::findOrFail($id);
+        $supplier->delete();
+
+        return redirect()->route('supplier.index')
+            ->with('success', 'Data supplier berhasil dihapus.');
+    }
+}

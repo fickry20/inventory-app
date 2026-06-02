@@ -2,6 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\KendaraanController;
+use App\Http\Controllers\SukuCadangController;
+use App\Http\Controllers\TransaksiMasukController;
+use App\Http\Controllers\TransaksiKeluarController;
+use App\Http\Controllers\NotifikasiRopController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +21,20 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-// ─── Redirect root ke dashboard (atau login jika belum auth) ───────────────
+// ─── Redirect root ke halaman role (atau login jika belum auth) ─────────────
 Route::get('/', function () {
-    return redirect()->route('dashboard');
+    if (auth()->check()) {
+        $role = auth()->user()->users_role;
+        switch ($role) {
+            case 'spv':
+                return redirect()->route('dashboard');
+            case 'staf_inventory':
+                return redirect()->route('suku-cadang.index');
+            case 'admin_gudang':
+                return redirect()->route('transaksi-masuk.index');
+        }
+    }
+    return redirect()->route('login');
 });
 
 // ─── Auth Routes (Guest Only) ──────────────────────────────────────────────
@@ -32,8 +50,31 @@ Route::post('/logout', [AuthController::class, 'logout'])
 
 // ─── Protected Routes (Auth Only) ─────────────────────────────────────────
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+
+    // ─── SPV Only ──────────────────────────────────────────────────────────
+    Route::middleware('role:spv')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::resource('users', \App\Http\Controllers\UserController::class);
+        Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
+    });
+
+    // ─── Staf Inventory Only ────────────────────────────────────────────────
+    Route::middleware('role:staf_inventory')->group(function () {
+        Route::resource('supplier', SupplierController::class);
+        Route::resource('kendaraan', KendaraanController::class);
+        Route::resource('suku-cadang', SukuCadangController::class);
+        Route::get('/notifikasi-rop', [NotifikasiRopController::class, 'index'])->name('notifikasi-rop.index');
+        Route::post('/notifikasi-rop/{id}/resolve', [NotifikasiRopController::class, 'resolve'])->name('notifikasi-rop.resolve');
+    });
+
+    // ─── Admin Gudang Only ──────────────────────────────────────────────────
+    Route::middleware('role:admin_gudang')->group(function () {
+        Route::resource('transaksi-masuk', TransaksiMasukController::class);
+        Route::resource('transaksi-keluar', TransaksiKeluarController::class);
+    });
+
+    // ─── All Authenticated Roles ─────────────────────────────────────────────
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
