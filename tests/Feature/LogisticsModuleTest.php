@@ -302,4 +302,52 @@ class LogisticsModuleTest extends TestCase
         $response->assertSee('SJ-OUT-999');
         $response->assertSee('PT. Tujuan Baru');
     }
+
+    /**
+     * Test SPV can view transaction indexes but cannot write to them.
+     */
+    public function test_spv_can_view_transaction_indexes_but_cannot_modify_them()
+    {
+        $sukuCadang = SukuCadang::create([
+            'suku_cadang_supplier_id' => $this->supplier->supplier_id,
+            'suku_cadang_kode' => 'FL-OIL-002',
+            'suku_cadang_nama' => 'Filter Oli Bosch',
+            'suku_cadang_kategori' => 'Filter',
+            'suku_cadang_satuan' => 'Pcs',
+            'suku_cadang_stok_total' => 100,
+            'suku_cadang_reorder_point' => 10,
+            'suku_cadang_stok_minimum' => 5,
+        ]);
+
+        $driver = Driver::create([
+            'supplier_id' => $this->supplier->supplier_id,
+            'nama_driver' => 'Budi',
+            'plat_kendaraan' => 'B 1234 ABC',
+            'no_surat_jalan' => 'SJ-SUP-123',
+        ]);
+
+        // 1. SPV can access index listings
+        $response = $this->actingAs($this->spv)->get(route('transaksi-masuk.index'));
+        $response->assertStatus(200);
+
+        $response = $this->actingAs($this->spv)->get(route('transaksi-keluar.index'));
+        $response->assertStatus(200);
+
+        // 2. SPV cannot store a new Transaksi Masuk (403 Forbidden)
+        $response = $this->actingAs($this->spv)->post(route('transaksi-masuk.store'), [
+            'transaksi_masuk_suku_cadang_id' => $sukuCadang->suku_cadang_id,
+            'transaksi_masuk_supplier_id' => $this->supplier->supplier_id,
+            'driver_id' => $driver->id,
+            'transaksi_masuk_jumlah' => 100,
+        ]);
+        $response->assertStatus(403);
+
+        // 3. SPV cannot store a new Transaksi Keluar (403 Forbidden)
+        $response = $this->actingAs($this->spv)->post(route('transaksi-keluar.store'), [
+            'suku_cadang_id' => $sukuCadang->suku_cadang_id,
+            'no_surat_jalan' => 'SJ-OUT-777',
+            'jumlah_diminta' => 5,
+        ]);
+        $response->assertStatus(403);
+    }
 }

@@ -7,9 +7,11 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Transaksi Barang Keluar</h1>
+        @if(auth()->user()->users_role === 'admin_gudang')
         <a href="{{ route('transaksi-keluar.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> Catat Barang Keluar
         </a>
+        @endif
     </div>
 
     <!-- Alert Success/Error -->
@@ -127,6 +129,7 @@
                                     <a href="{{ route('transaksi-keluar.cetak-sj', $transaksi->transaksi_keluar_id) }}" target="_blank" class="btn btn-sm btn-secondary btn-circle shadow-sm" title="Cetak SJ">
                                         <i class="fas fa-print"></i>
                                     </a>
+                                    @if(auth()->user()->users_role === 'admin_gudang')
                                     <a href="{{ route('transaksi-keluar.edit', $transaksi->transaksi_keluar_id) }}" class="btn btn-sm btn-info btn-circle shadow-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -137,6 +140,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

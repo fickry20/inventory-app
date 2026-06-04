@@ -7,9 +7,11 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Transaksi Barang Masuk</h1>
+        @if(auth()->user()->users_role === 'admin_gudang')
         <a href="{{ route('transaksi-masuk.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
             <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> Catat Barang Masuk
         </a>
+        @endif
     </div>
 
     <!-- Alert Success/Error -->
@@ -121,6 +123,7 @@
                                     {{ $transaksi->transaksi_masuk_created_at ? $transaksi->transaksi_masuk_created_at->format('d M Y H:i') : '-' }}
                                 </td>
                                 <td class="text-center">
+                                    @if(auth()->user()->users_role === 'admin_gudang')
                                     <a href="{{ route('transaksi-masuk.edit', $transaksi->transaksi_masuk_id) }}" class="btn btn-sm btn-info btn-circle shadow-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -131,6 +134,9 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
+                                    @else
+                                    <span class="text-muted small">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

@@ -13,6 +13,11 @@ use Carbon\Carbon;
 
 class TransaksiMasukController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:admin_gudang')->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the resource.
      */

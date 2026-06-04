@@ -61,6 +61,8 @@ Route::middleware('auth')->group(function () {
 
     // ─── Shared SPV & Admin Gudang ──────────────────────────────────────────
     Route::middleware('role:spv,admin_gudang')->group(function () {
+        Route::resource('transaksi-masuk', TransaksiMasukController::class);
+        Route::resource('transaksi-keluar', TransaksiKeluarController::class);
         Route::get('/transaksi-keluar/{id}/cetak-sj', [TransaksiKeluarController::class, 'cetakSj'])->name('transaksi-keluar.cetak-sj');
     });
 
@@ -74,12 +76,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('suku-cadang', SukuCadangController::class);
         Route::get('/notifikasi-rop', [NotifikasiRopController::class, 'index'])->name('notifikasi-rop.index');
         Route::post('/notifikasi-rop/{id}/resolve', [NotifikasiRopController::class, 'resolve'])->name('notifikasi-rop.resolve');
-    });
-
-    // ─── Admin Gudang Only ──────────────────────────────────────────────────
-    Route::middleware('role:admin_gudang')->group(function () {
-        Route::resource('transaksi-masuk', TransaksiMasukController::class);
-        Route::resource('transaksi-keluar', TransaksiKeluarController::class);
     });
 
     // ─── All Authenticated Roles ─────────────────────────────────────────────

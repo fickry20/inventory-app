@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\DB;
 
 class TransaksiKeluarController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role:admin_gudang')->except(['index', 'show', 'cetakSj']);
+    }
+
     /**
      * Display a listing of the resource.
      */
