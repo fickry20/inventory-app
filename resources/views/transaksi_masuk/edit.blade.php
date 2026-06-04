@@ -27,7 +27,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3 bg-info">
-            <h6 class="m-0 font-weight-bold text-white">Form Edit Transaksi Barang Masuk: {{ $transaksiMasuk->transaksi_masuk_no_dokumen }}</h6>
+            <h6 class="m-0 font-weight-bold text-white">Form Edit Transaksi Barang Masuk: {{ $transaksiMasuk->transaksi_masuk_no_surat_jalan }}</h6>
         </div>
         <div class="card-body">
             <form action="{{ route('transaksi-masuk.update', $transaksiMasuk->transaksi_masuk_id) }}" method="POST">
@@ -67,8 +67,6 @@
                                 class="form-control @error('transaksi_masuk_supplier_id') is-invalid @enderror" required>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->supplier_id }}" 
-                                        data-plat="{{ $supplier->supplier_plat_kendaraan }}" 
-                                        data-driver="{{ $supplier->supplier_nama_driver }}"
                                         {{ old('transaksi_masuk_supplier_id', $transaksiMasuk->transaksi_masuk_supplier_id) == $supplier->supplier_id ? 'selected' : '' }}>
                                         {{ $supplier->supplier_nama }}
                                     </option>
@@ -77,12 +75,6 @@
                             @error('transaksi_masuk_supplier_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label class="font-weight-bold text-gray-700">Armada Pengantar / Driver</label>
-                            <input type="text" id="supplier_info" class="form-control bg-light text-gray-900 font-weight-bold" placeholder="Pilih supplier untuk memuat data pengiriman..." readonly disabled>
-                            <small class="text-muted">Informasi plat kendaraan dan driver dimuat otomatis dari profil supplier.</small>
                         </div>
 
                         <div class="form-group">
@@ -105,28 +97,33 @@
                     <!-- Kolom Kanan -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="transaksi_masuk_no_dokumen" class="font-weight-bold text-gray-900">No. Dokumen Penerimaan <span class="text-danger">*</span></label>
-                            <input type="text" name="transaksi_masuk_no_dokumen" id="transaksi_masuk_no_dokumen" 
-                                class="form-control @error('transaksi_masuk_no_dokumen') is-invalid @enderror" 
-                                placeholder="Masukkan nomor dokumen" 
-                                value="{{ old('transaksi_masuk_no_dokumen', $transaksiMasuk->transaksi_masuk_no_dokumen) }}" required>
-                            @error('transaksi_masuk_no_dokumen')
+                            <label for="driver_id" class="font-weight-bold text-gray-900">No. Surat Jalan Pengantar <span class="text-danger">*</span></label>
+                            <select name="driver_id" id="driver_id" 
+                                class="form-control @error('driver_id') is-invalid @enderror" required disabled>
+                                <option value="" disabled selected>-- Pilih Supplier Terlebih Dahulu --</option>
+                            </select>
+                            @error('driver_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="transaksi_masuk_no_surat_jalan" class="font-weight-bold text-gray-900">No. Surat Jalan Pengantar <span class="text-danger">*</span></label>
-                            <input type="text" name="transaksi_masuk_no_surat_jalan" id="transaksi_masuk_no_surat_jalan" 
-                                class="form-control @error('transaksi_masuk_no_surat_jalan') is-invalid @enderror" 
-                                placeholder="Masukkan nomor surat jalan" 
-                                value="{{ old('transaksi_masuk_no_surat_jalan', $transaksiMasuk->transaksi_masuk_no_surat_jalan) }}" required>
-                            @error('transaksi_masuk_no_surat_jalan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <!-- Driver Info Card -->
+                        <div id="driver_details_card" class="card bg-light border-left-info mt-3" style="display: none;">
+                            <div class="card-body py-2">
+                                <div class="font-weight-bold text-gray-900 text-xs text-uppercase mb-1">Informasi Pengiriman / Driver</div>
+                                <div class="text-sm text-gray-800">
+                                    <div>Nama Driver: <strong id="det_nama_driver"></strong></div>
+                                    <div>Plat Kendaraan: <strong id="det_plat_kendaraan" class="text-uppercase"></strong></div>
+                                    <div id="det_foto_container" class="mt-2" style="display: none;">
+                                        <a id="det_foto_link" href="#" target="_blank" class="btn btn-sm btn-outline-info font-weight-bold">
+                                            <i class="fas fa-image mr-1"></i> Lihat Foto SJ
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label for="transaksi_masuk_keterangan" class="font-weight-bold text-gray-900">Keterangan / Catatan Tambahan</label>
                             <textarea name="transaksi_masuk_keterangan" id="transaksi_masuk_keterangan" rows="4" 
                                 class="form-control @error('transaksi_masuk_keterangan') is-invalid @enderror" 
@@ -156,15 +153,85 @@
     <script>
         $(document).ready(function() {
             $('#transaksi_masuk_supplier_id').change(function() {
-                var selected = $(this).find('option:selected');
-                var plat = selected.data('plat');
-                var driver = selected.data('driver');
-                if (plat && driver) {
-                    $('#supplier_info').val(plat + ' (Driver: ' + driver + ')');
-                } else {
-                    $('#supplier_info').val('');
+                var supplierId = $(this).val();
+                var $driverSelect = $('#driver_id');
+                var oldDriverId = "{{ old('driver_id', $transaksiMasuk->driver_id) }}";
+
+                // Reset driver select
+                $driverSelect.empty().prop('disabled', true);
+                $('#driver_details_card').hide();
+
+                if (!supplierId) {
+                    $driverSelect.append('<option value="" disabled selected>-- Pilih Supplier Terlebih Dahulu --</option>');
+                    return;
                 }
-            }).trigger('change');
+
+                $driverSelect.append('<option value="" disabled selected>-- Memuat Surat Jalan... --</option>');
+
+                $.ajax({
+                    url: '/api/supplier/' + supplierId + '/drivers',
+                    type: 'GET',
+                    success: function(data) {
+                        $driverSelect.empty().prop('disabled', false);
+                        
+                        if (data.length === 0) {
+                            $driverSelect.append('<option value="" disabled selected>-- Tidak ada data driver/surat jalan --</option>');
+                            return;
+                        }
+
+                        $driverSelect.append('<option value="" disabled selected>-- Pilih Surat Jalan --</option>');
+                        $.each(data, function(key, driver) {
+                            var isSelected = (oldDriverId == driver.id) ? 'selected' : '';
+                            $driverSelect.append(
+                                '<option value="' + driver.id + '" ' +
+                                'data-nama="' + driver.nama_driver + '" ' +
+                                'data-plat="' + driver.plat_kendaraan + '" ' +
+                                'data-foto="' + (driver.foto_sj ? driver.foto_sj : '') + '" ' +
+                                isSelected + '>' +
+                                driver.no_surat_jalan + ' (Driver: ' + driver.nama_driver + ')' +
+                                '</option>'
+                            );
+                        });
+
+                        // Trigger change if we have old selected value or auto trigger
+                        if (oldDriverId) {
+                            $driverSelect.trigger('change');
+                        }
+                    },
+                    error: function() {
+                        $driverSelect.empty().prop('disabled', true)
+                            .append('<option value="" disabled selected>-- Gagal memuat data --</option>');
+                    }
+                });
+            });
+
+            $('#driver_id').change(function() {
+                var selected = $(this).find('option:selected');
+                if (selected.val()) {
+                    var nama = selected.data('nama');
+                    var plat = selected.data('plat');
+                    var foto = selected.data('foto');
+
+                    $('#det_nama_driver').text(nama);
+                    $('#det_plat_kendaraan').text(plat);
+                    
+                    if (foto) {
+                        $('#det_foto_link').attr('href', '/storage/' + foto);
+                        $('#det_foto_container').show();
+                    } else {
+                        $('#det_foto_container').hide();
+                    }
+
+                    $('#driver_details_card').slideDown();
+                } else {
+                    $('#driver_details_card').slideUp();
+                }
+            });
+
+            // Trigger change if editing or old input exists
+            if ($('#transaksi_masuk_supplier_id').val()) {
+                $('#transaksi_masuk_supplier_id').trigger('change');
+            }
         });
     </script>
 @endpush

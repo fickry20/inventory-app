@@ -33,7 +33,7 @@ class LaporanController extends Controller
         }
 
         if ($type === 'semua' || $type === 'keluar') {
-            $transaksiKeluar = TransaksiKeluar::with(['sukuCadang', 'user', 'kendaraan'])
+            $transaksiKeluar = TransaksiKeluar::with(['sukuCadang', 'user', 'kendaraan', 'perusahaanTujuan'])
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->orderBy('created_at', 'desc')
                 ->get();

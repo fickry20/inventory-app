@@ -64,7 +64,6 @@
                             <tr>
                                 <th style="width: 5%">No</th>
                                 <th>Tanggal</th>
-                                <th>No Dokumen</th>
                                 <th>Suku Cadang</th>
                                 <th>Supplier</th>
                                 <th class="text-right">Jumlah</th>
@@ -77,12 +76,11 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $masuk->transaksi_masuk_created_at ? $masuk->transaksi_masuk_created_at->format('d-m-Y H:i') : '-' }}</td>
-                                    <td class="font-weight-bold">{{ $masuk->transaksi_masuk_no_dokumen }}</td>
                                     <td>{{ $masuk->sukuCadang->suku_cadang_nama ?? 'N/A' }} ({{ $masuk->sukuCadang->suku_cadang_kode ?? 'N/A' }})</td>
                                     <td>{{ $masuk->supplier->supplier_nama ?? 'N/A' }}</td>
                                     <td class="text-right text-success font-weight-bold">+{{ $masuk->transaksi_masuk_jumlah }}</td>
                                     <td>{{ $masuk->user->users_username ?? 'N/A' }}</td>
-                                    <td>{{ $masuk->supplier->supplier_plat_kendaraan ?? 'N/A' }} (Driver: {{ $masuk->supplier->supplier_nama_driver ?? 'N/A' }})</td>
+                                    <td>{{ $masuk->driver->plat_kendaraan ?? 'N/A' }} (Driver: {{ $masuk->driver->nama_driver ?? 'N/A' }})</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -110,7 +108,6 @@
                             <tr>
                                 <th style="width: 5%">No</th>
                                 <th>Tanggal</th>
-                                <th>No Dokumen</th>
                                 <th>Tujuan PT</th>
                                 <th>Suku Cadang</th>
                                 <th class="text-right">Diminta</th>
@@ -118,6 +115,7 @@
                                 <th>Status</th>
                                 <th>Petugas</th>
                                 <th>Kendaraan</th>
+                                <th class="text-center no-print" style="width: 10%">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -125,8 +123,7 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $keluar->created_at ? $keluar->created_at->format('d-m-Y H:i') : '-' }}</td>
-                                    <td class="font-weight-bold">{{ $keluar->no_dokumen }}</td>
-                                    <td class="font-weight-bold text-gray-900">{{ $keluar->tujuan_pt }}</td>
+                                    <td class="font-weight-bold text-gray-900">{{ $keluar->perusahaanTujuan->nama ?? 'N/A' }}</td>
                                     <td>{{ $keluar->sukuCadang->suku_cadang_nama ?? 'N/A' }} ({{ $keluar->sukuCadang->suku_cadang_kode ?? 'N/A' }})</td>
                                     <td class="text-right font-weight-bold">{{ $keluar->jumlah_diminta }}</td>
                                     <td class="text-right text-danger font-weight-bold">-{{ $keluar->jumlah_terpenuhi }}</td>
@@ -139,10 +136,15 @@
                                     </td>
                                     <td>{{ $keluar->user->users_username ?? 'N/A' }}</td>
                                     <td>{{ $keluar->kendaraan->kendaraan_plat ?? 'N/A' }} (Driver: {{ $keluar->kendaraan->kendaraan_nama_driver ?? 'N/A' }})</td>
+                                    <td class="text-center no-print">
+                                        <a href="{{ route('transaksi-keluar.cetak-sj', $keluar->transaksi_keluar_id) }}" target="_blank" class="btn btn-xs btn-outline-secondary py-0 px-2 font-weight-bold">
+                                            <i class="fas fa-print mr-1"></i> Cetak SJ
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center py-3 text-muted">Tidak ada transaksi barang keluar pada periode ini.</td>
+                                    <td colspan="10" class="text-center py-3 text-muted">Tidak ada transaksi barang keluar pada periode ini.</td>
                                 </tr>
                             @endforelse
                         </tbody>

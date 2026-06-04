@@ -66,7 +66,6 @@
                     <thead class="thead-light">
                         <tr>
                             <th width="5%">No</th>
-                            <th>No. Dokumen</th>
                             <th>No. Surat Jalan</th>
                             <th>Tujuan PT</th>
                             <th>Suku Cadang</th>
@@ -76,16 +75,15 @@
                             <th>Kendaraan Penerima</th>
                             <th>Operator</th>
                             <th>Tanggal Keluar</th>
-                            <th width="10%" class="text-center">Aksi</th>
+                            <th width="12%" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($transaksiKeluars as $index => $transaksi)
                             <tr>
                                 <td>{{ $transaksiKeluars->firstItem() + $index }}</td>
-                                <td class="font-weight-bold text-gray-900">{{ $transaksi->no_dokumen }}</td>
                                 <td>{{ $transaksi->no_surat_jalan }}</td>
-                                <td class="font-weight-bold text-gray-900">{{ $transaksi->tujuan_pt }}</td>
+                                <td class="font-weight-bold text-gray-900">{{ $transaksi->perusahaanTujuan->nama ?? 'N/A' }}</td>
                                 <td>
                                     @if($transaksi->sukuCadang)
                                         <div class="font-weight-bold">{{ $transaksi->sukuCadang->suku_cadang_nama }}</div>
@@ -126,6 +124,9 @@
                                     {{ $transaksi->created_at ? $transaksi->created_at->format('d M Y H:i') : '-' }}
                                 </td>
                                 <td class="text-center">
+                                    <a href="{{ route('transaksi-keluar.cetak-sj', $transaksi->transaksi_keluar_id) }}" target="_blank" class="btn btn-sm btn-secondary btn-circle shadow-sm" title="Cetak SJ">
+                                        <i class="fas fa-print"></i>
+                                    </a>
                                     <a href="{{ route('transaksi-keluar.edit', $transaksi->transaksi_keluar_id) }}" class="btn btn-sm btn-info btn-circle shadow-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
@@ -140,7 +141,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="text-center py-4">
+                                <td colspan="10" class="text-center py-4">
                                     <div class="text-gray-500">
                                         <i class="fas fa-dolly fa-2x mb-2 d-block"></i>
                                         Belum ada riwayat transaksi barang keluar.

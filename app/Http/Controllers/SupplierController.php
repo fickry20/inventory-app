@@ -44,18 +44,12 @@ class SupplierController extends Controller
             'supplier_nama'           => 'required|string|max:150',
             'supplier_kontak'         => 'required|string|max:100',
             'supplier_alamat'         => 'required|string',
-            'supplier_plat_kendaraan' => 'required|string|max:20',
-            'supplier_nama_driver'    => 'required|string|max:150',
         ], [
             'supplier_nama.required'           => 'Nama supplier wajib diisi.',
             'supplier_nama.max'                => 'Nama supplier maksimal 150 karakter.',
             'supplier_kontak.required'         => 'Kontak supplier wajib diisi.',
             'supplier_kontak.max'              => 'Kontak supplier maksimal 100 karakter.',
             'supplier_alamat.required'         => 'Alamat supplier wajib diisi.',
-            'supplier_plat_kendaraan.required' => 'Plat kendaraan supplier wajib diisi.',
-            'supplier_plat_kendaraan.max'      => 'Plat kendaraan supplier maksimal 20 karakter.',
-            'supplier_nama_driver.required'    => 'Nama driver wajib diisi.',
-            'supplier_nama_driver.max'         => 'Nama driver maksimal 150 karakter.',
         ]);
 
         Supplier::create($validated);
@@ -69,7 +63,7 @@ class SupplierController extends Controller
      */
     public function edit($id)
     {
-        $supplier = Supplier::findOrFail($id);
+        $supplier = Supplier::with('drivers')->findOrFail($id);
         return view('supplier.edit', compact('supplier'));
     }
 
@@ -84,18 +78,12 @@ class SupplierController extends Controller
             'supplier_nama'           => 'required|string|max:150',
             'supplier_kontak'         => 'required|string|max:100',
             'supplier_alamat'         => 'required|string',
-            'supplier_plat_kendaraan' => 'required|string|max:20',
-            'supplier_nama_driver'    => 'required|string|max:150',
         ], [
             'supplier_nama.required'           => 'Nama supplier wajib diisi.',
             'supplier_nama.max'                => 'Nama supplier maksimal 150 karakter.',
             'supplier_kontak.required'         => 'Kontak supplier wajib diisi.',
             'supplier_kontak.max'              => 'Kontak supplier maksimal 100 karakter.',
             'supplier_alamat.required'         => 'Alamat supplier wajib diisi.',
-            'supplier_plat_kendaraan.required' => 'Plat kendaraan supplier wajib diisi.',
-            'supplier_plat_kendaraan.max'      => 'Plat kendaraan supplier maksimal 20 karakter.',
-            'supplier_nama_driver.required'    => 'Nama driver wajib diisi.',
-            'supplier_nama_driver.max'         => 'Nama driver maksimal 150 karakter.',
         ]);
 
         $supplier->update($validated);

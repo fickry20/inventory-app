@@ -53,7 +53,7 @@
                                 <option value="" disabled selected>-- Pilih Supplier --</option>
                                 @foreach($suppliers as $supplier)
                                     <option value="{{ $supplier->supplier_id }}" {{ old('suku_cadang_supplier_id') == $supplier->supplier_id ? 'selected' : '' }}>
-                                        {{ $supplier->supplier_nama }} (Driver: {{ $supplier->supplier_nama_driver }})
+                                        {{ $supplier->supplier_nama }}
                                     </option>
                                 @endforeach
                             </select>

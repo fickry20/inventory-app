@@ -209,7 +209,7 @@
                         <table class="table table-bordered table-sm small table-hover" width="100%" cellspacing="0">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>No Dokumen</th>
+                                    <th>No. Surat Jalan</th>
                                     <th>Suku Cadang</th>
                                     <th class="text-right">Kuantitas</th>
                                     <th>Tanggal</th>
@@ -218,7 +218,7 @@
                             <tbody>
                                 @forelse($recentMasuk as $masuk)
                                     <tr>
-                                        <td class="font-weight-bold text-gray-900">{{ $masuk->transaksi_masuk_no_dokumen }}</td>
+                                        <td class="font-weight-bold text-gray-900">{{ $masuk->transaksi_masuk_no_surat_jalan }}</td>
                                         <td>{{ $masuk->sukuCadang->suku_cadang_nama ?? 'Dihapus' }}</td>
                                         <td class="text-right text-success font-weight-bold">+{{ $masuk->transaksi_masuk_jumlah }}</td>
                                         <td>{{ $masuk->transaksi_masuk_created_at ? $masuk->transaksi_masuk_created_at->format('d M H:i') : '-' }}</td>
@@ -247,7 +247,7 @@
                         <table class="table table-bordered table-sm small table-hover" width="100%" cellspacing="0">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>No Dokumen</th>
+                                    <th>No. Surat Jalan</th>
                                     <th>Suku Cadang</th>
                                     <th class="text-right">Terpenuhi</th>
                                     <th>Tanggal</th>
@@ -256,7 +256,7 @@
                             <tbody>
                                 @forelse($recentKeluar as $keluar)
                                     <tr>
-                                        <td class="font-weight-bold text-gray-900">{{ $keluar->no_dokumen }}</td>
+                                        <td class="font-weight-bold text-gray-900">{{ $keluar->no_surat_jalan }}</td>
                                         <td>{{ $keluar->sukuCadang->suku_cadang_nama ?? 'Dihapus' }}</td>
                                         <td class="text-right text-danger font-weight-bold">-{{ $keluar->jumlah_terpenuhi }}</td>
                                         <td>{{ $keluar->created_at ? $keluar->created_at->format('d M H:i') : '-' }}</td>

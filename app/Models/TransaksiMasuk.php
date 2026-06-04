@@ -23,7 +23,7 @@ class TransaksiMasuk extends Model
         'transaksi_masuk_supplier_id',
         'transaksi_masuk_users_id',
         'transaksi_masuk_kendaraan_id',
-        'transaksi_masuk_no_dokumen',
+        'driver_id',
         'transaksi_masuk_no_surat_jalan',
         'transaksi_masuk_jumlah',
         'transaksi_masuk_keterangan',
@@ -47,6 +47,11 @@ class TransaksiMasuk extends Model
     public function kendaraan()
     {
         return $this->belongsTo(Kendaraan::class, 'transaksi_masuk_kendaraan_id', 'kendaraan_id');
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver_id');
     }
 
     public function batchMasuk()

@@ -22,9 +22,8 @@ class TransaksiKeluar extends Model
         'suku_cadang_id',
         'users',
         'kendaraan_id',
-        'no_dokumen',
         'no_surat_jalan',
-        'tujuan_pt',
+        'tujuan_pt_id',
         'jumlah_diminta',
         'jumlah_terpenuhi',
         'status',
@@ -44,6 +43,11 @@ class TransaksiKeluar extends Model
     public function kendaraan()
     {
         return $this->belongsTo(Kendaraan::class, 'kendaraan_id', 'kendaraan_id');
+    }
+
+    public function perusahaanTujuan()
+    {
+        return $this->belongsTo(PerusahaanTujuan::class, 'tujuan_pt_id');
     }
 
     public function detailKeluarFifo()

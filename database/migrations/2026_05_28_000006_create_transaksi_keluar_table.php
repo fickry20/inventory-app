@@ -16,9 +16,8 @@ return new class extends Migration
             $table->unsignedInteger('suku_cadang_id');
             $table->unsignedInteger('users');
             $table->unsignedInteger('kendaraan_id');
-            $table->string('no_dokumen', 100);
             $table->string('no_surat_jalan', 100);
-            $table->string('tujuan_pt', 150);
+            $table->unsignedInteger('tujuan_pt_id');
             $table->integer('jumlah_diminta');
             $table->integer('jumlah_terpenuhi');
             $table->enum('status', ['terpenuhi', 'sebagian', 'ditolak']);
@@ -41,6 +40,11 @@ return new class extends Migration
                   ->references('kendaraan_id')
                   ->on('kendaraan')
                   ->onDelete('cascade');
+
+            $table->foreign('tujuan_pt_id')
+                  ->references('id')
+                  ->on('perusahaan_tujuan')
+                  ->onDelete('restrict');
         });
     }
 

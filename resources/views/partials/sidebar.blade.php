@@ -43,6 +43,14 @@
             Pengaturan
         </div>
 
+        <!-- Nav Item - Perusahaan Tujuan -->
+        <li class="nav-item {{ Request::routeIs('perusahaan-tujuan.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('perusahaan-tujuan.index') }}">
+                <i class="fas fa-fw fa-building"></i>
+                <span>Perusahaan Tujuan</span>
+            </a>
+        </li>
+
         <!-- Nav Item - Manajemen User -->
         <li class="nav-item {{ Request::routeIs('users.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('users.index') }}">

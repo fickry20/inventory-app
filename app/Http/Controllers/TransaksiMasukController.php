@@ -20,16 +20,19 @@ class TransaksiMasukController extends Controller
     {
         $search = $request->input('search');
 
-        $transaksiMasuks = TransaksiMasuk::with(['sukuCadang', 'supplier', 'user', 'kendaraan'])
+        $transaksiMasuks = TransaksiMasuk::with(['sukuCadang', 'supplier', 'user', 'driver'])
             ->when($search, function ($query, $search) {
-                $query->where('transaksi_masuk_no_dokumen', 'like', "%{$search}%")
-                    ->orWhere('transaksi_masuk_no_surat_jalan', 'like', "%{$search}%")
+                $query->where('transaksi_masuk_no_surat_jalan', 'like', "%{$search}%")
                     ->orWhereHas('sukuCadang', function ($q) use ($search) {
                         $q->where('suku_cadang_nama', 'like', "%{$search}%")
                             ->orWhere('suku_cadang_kode', 'like', "%{$search}%");
                     })
                     ->orWhereHas('supplier', function ($q) use ($search) {
                         $q->where('supplier_nama', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('driver', function ($q) use ($search) {
+                        $q->where('nama_driver', 'like', "%{$search}%")
+                            ->orWhere('plat_kendaraan', 'like', "%{$search}%");
                     });
             })
             ->latest('transaksi_masuk_created_at')
@@ -59,9 +62,7 @@ class TransaksiMasukController extends Controller
         $validated = $request->validate([
             'transaksi_masuk_suku_cadang_id' => 'required|exists:suku_cadang,suku_cadang_id',
             'transaksi_masuk_supplier_id'    => 'required|exists:supplier,supplier_id',
-            'transaksi_masuk_kendaraan_id'   => 'nullable|exists:kendaraan,kendaraan_id',
-            'transaksi_masuk_no_dokumen'     => 'required|string|max:100',
-            'transaksi_masuk_no_surat_jalan' => 'required|string|max:100',
+            'driver_id'                      => 'required|exists:drivers,id',
             'transaksi_masuk_jumlah'         => 'required|integer|min:1',
             'transaksi_masuk_keterangan'     => 'nullable|string',
         ], [
@@ -69,25 +70,23 @@ class TransaksiMasukController extends Controller
             'transaksi_masuk_suku_cadang_id.exists'   => 'Suku cadang tidak valid.',
             'transaksi_masuk_supplier_id.required'    => 'Supplier wajib dipilih.',
             'transaksi_masuk_supplier_id.exists'      => 'Supplier tidak valid.',
-            'transaksi_masuk_kendaraan_id.exists'      => 'Kendaraan tidak valid.',
-            'transaksi_masuk_no_dokumen.required'     => 'Nomor dokumen wajib diisi.',
-            'transaksi_masuk_no_dokumen.max'          => 'Nomor dokumen maksimal 100 karakter.',
-            'transaksi_masuk_no_surat_jalan.required' => 'Nomor surat jalan wajib diisi.',
-            'transaksi_masuk_no_surat_jalan.max'      => 'Nomor surat jalan maksimal 100 karakter.',
+            'driver_id.required'                      => 'Driver/Surat jalan wajib dipilih.',
+            'driver_id.exists'                        => 'Driver/Surat jalan tidak valid.',
             'transaksi_masuk_jumlah.required'         => 'Kuantitas barang masuk wajib diisi.',
             'transaksi_masuk_jumlah.integer'          => 'Kuantitas harus berupa angka.',
             'transaksi_masuk_jumlah.min'              => 'Kuantitas barang masuk minimal 1.',
         ]);
 
         DB::transaction(function () use ($validated) {
+            $driver = \App\Models\Driver::findOrFail($validated['driver_id']);
+
             // 1. Simpan Transaksi Masuk
             $transaksi = TransaksiMasuk::create([
                 'transaksi_masuk_suku_cadang_id' => $validated['transaksi_masuk_suku_cadang_id'],
                 'transaksi_masuk_supplier_id'    => $validated['transaksi_masuk_supplier_id'],
                 'transaksi_masuk_users_id'       => auth()->id(),
-                'transaksi_masuk_kendaraan_id'   => $validated['transaksi_masuk_kendaraan_id'] ?? null,
-                'transaksi_masuk_no_dokumen'     => $validated['transaksi_masuk_no_dokumen'],
-                'transaksi_masuk_no_surat_jalan' => $validated['transaksi_masuk_no_surat_jalan'],
+                'driver_id'                      => $validated['driver_id'],
+                'transaksi_masuk_no_surat_jalan' => $driver->no_surat_jalan,
                 'transaksi_masuk_jumlah'         => $validated['transaksi_masuk_jumlah'],
                 'transaksi_masuk_keterangan'     => $validated['transaksi_masuk_keterangan'] ?? null,
             ]);
@@ -116,7 +115,7 @@ class TransaksiMasukController extends Controller
      */
     public function edit($id)
     {
-        $transaksiMasuk = TransaksiMasuk::with('batchMasuk')->findOrFail($id);
+        $transaksiMasuk = TransaksiMasuk::with(['batchMasuk', 'driver'])->findOrFail($id);
 
         // Periksa apakah batch dari transaksi masuk ini sudah terpakai
         $hasBeenUsed = false;
@@ -129,9 +128,8 @@ class TransaksiMasukController extends Controller
 
         $sukuCadangs = SukuCadang::all();
         $suppliers = Supplier::all();
-        $kendaraans = Kendaraan::all();
 
-        return view('transaksi_masuk.edit', compact('transaksiMasuk', 'hasBeenUsed', 'sukuCadangs', 'suppliers', 'kendaraans'));
+        return view('transaksi_masuk.edit', compact('transaksiMasuk', 'hasBeenUsed', 'sukuCadangs', 'suppliers'));
     }
 
     /**
@@ -152,9 +150,7 @@ class TransaksiMasukController extends Controller
 
         $rules = [
             'transaksi_masuk_supplier_id'    => 'required|exists:supplier,supplier_id',
-            'transaksi_masuk_kendaraan_id'   => 'nullable|exists:kendaraan,kendaraan_id',
-            'transaksi_masuk_no_dokumen'     => 'required|string|max:100',
-            'transaksi_masuk_no_surat_jalan' => 'required|string|max:100',
+            'driver_id'                      => 'required|exists:drivers,id',
             'transaksi_masuk_keterangan'     => 'nullable|string',
         ];
 
@@ -167,11 +163,8 @@ class TransaksiMasukController extends Controller
         $validated = $request->validate($rules, [
             'transaksi_masuk_supplier_id.required'    => 'Supplier wajib dipilih.',
             'transaksi_masuk_supplier_id.exists'      => 'Supplier tidak valid.',
-            'transaksi_masuk_kendaraan_id.exists'      => 'Kendaraan tidak valid.',
-            'transaksi_masuk_no_dokumen.required'     => 'Nomor dokumen wajib diisi.',
-            'transaksi_masuk_no_dokumen.max'          => 'Nomor dokumen maksimal 100 karakter.',
-            'transaksi_masuk_no_surat_jalan.required' => 'Nomor surat jalan wajib diisi.',
-            'transaksi_masuk_no_surat_jalan.max'      => 'Nomor surat jalan maksimal 100 karakter.',
+            'driver_id.required'                      => 'Driver/Surat jalan wajib dipilih.',
+            'driver_id.exists'                        => 'Driver/Surat jalan tidak valid.',
             'transaksi_masuk_suku_cadang_id.required' => 'Suku cadang wajib dipilih.',
             'transaksi_masuk_suku_cadang_id.exists'   => 'Suku cadang tidak valid.',
             'transaksi_masuk_jumlah.required'         => 'Kuantitas barang masuk wajib diisi.',
@@ -222,12 +215,13 @@ class TransaksiMasukController extends Controller
                 ]);
             }
 
+            $driver = \App\Models\Driver::findOrFail($validated['driver_id']);
+
             // Update data transaksi masuk (metadata)
             $transaksiMasuk->update([
                 'transaksi_masuk_supplier_id'    => $validated['transaksi_masuk_supplier_id'],
-                'transaksi_masuk_kendaraan_id'   => $validated['transaksi_masuk_kendaraan_id'] ?? null,
-                'transaksi_masuk_no_dokumen'     => $validated['transaksi_masuk_no_dokumen'],
-                'transaksi_masuk_no_surat_jalan' => $validated['transaksi_masuk_no_surat_jalan'],
+                'driver_id'                      => $validated['driver_id'],
+                'transaksi_masuk_no_surat_jalan' => $driver->no_surat_jalan,
                 'transaksi_masuk_keterangan'     => $validated['transaksi_masuk_keterangan'] ?? null,
             ]);
         });

@@ -56,11 +56,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::resource('users', \App\Http\Controllers\UserController::class);
         Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
+        Route::resource('perusahaan-tujuan', \App\Http\Controllers\PerusahaanTujuanController::class);
+    });
+
+    // ─── Shared SPV & Admin Gudang ──────────────────────────────────────────
+    Route::middleware('role:spv,admin_gudang')->group(function () {
+        Route::get('/transaksi-keluar/{id}/cetak-sj', [TransaksiKeluarController::class, 'cetakSj'])->name('transaksi-keluar.cetak-sj');
     });
 
     // ─── Staf Inventory Only ────────────────────────────────────────────────
     Route::middleware('role:staf_inventory')->group(function () {
         Route::resource('supplier', SupplierController::class);
+        Route::post('/supplier/{supplier_id}/drivers', [\App\Http\Controllers\DriverController::class, 'store'])->name('drivers.store');
+        Route::put('/drivers/{id}', [\App\Http\Controllers\DriverController::class, 'update'])->name('drivers.update');
+        Route::delete('/drivers/{id}', [\App\Http\Controllers\DriverController::class, 'destroy'])->name('drivers.destroy');
         Route::resource('kendaraan', KendaraanController::class);
         Route::resource('suku-cadang', SukuCadangController::class);
         Route::get('/notifikasi-rop', [NotifikasiRopController::class, 'index'])->name('notifikasi-rop.index');
@@ -74,6 +83,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // ─── All Authenticated Roles ─────────────────────────────────────────────
+    Route::get('/api/supplier/{supplier_id}/drivers', [\App\Http\Controllers\DriverController::class, 'getDriversBySupplier'])->name('api.supplier.drivers');
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
     Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });

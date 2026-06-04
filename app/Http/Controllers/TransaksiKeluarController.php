@@ -20,13 +20,15 @@ class TransaksiKeluarController extends Controller
     {
         $search = $request->input('search');
 
-        $transaksiKeluars = TransaksiKeluar::with(['sukuCadang', 'user', 'kendaraan'])
+        $transaksiKeluars = TransaksiKeluar::with(['sukuCadang', 'user', 'kendaraan', 'perusahaanTujuan'])
             ->when($search, function ($query, $search) {
-                $query->where('no_dokumen', 'like', "%{$search}%")
-                    ->orWhere('no_surat_jalan', 'like', "%{$search}%")
+                $query->where('no_surat_jalan', 'like', "%{$search}%")
                     ->orWhereHas('sukuCadang', function ($q) use ($search) {
                         $q->where('suku_cadang_nama', 'like', "%{$search}%")
                             ->orWhere('suku_cadang_kode', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('perusahaanTujuan', function ($q) use ($search) {
+                        $q->where('nama', 'like', "%{$search}%");
                     })
                     ->orWhereHas('user', function ($q) use ($search) {
                         $q->where('users_username', 'like', "%{$search}%");
@@ -46,8 +48,9 @@ class TransaksiKeluarController extends Controller
     {
         $sukuCadangs = SukuCadang::all();
         $kendaraans = Kendaraan::all();
+        $perusahaans = \App\Models\PerusahaanTujuan::all();
 
-        return view('transaksi_keluar.create', compact('sukuCadangs', 'kendaraans'));
+        return view('transaksi_keluar.create', compact('sukuCadangs', 'kendaraans', 'perusahaans'));
     }
 
     /**
@@ -58,9 +61,8 @@ class TransaksiKeluarController extends Controller
         $validated = $request->validate([
             'suku_cadang_id' => 'required|exists:suku_cadang,suku_cadang_id',
             'kendaraan_id'   => 'required|exists:kendaraan,kendaraan_id',
-            'no_dokumen'     => 'required|string|max:100',
             'no_surat_jalan' => 'required|string|max:100',
-            'tujuan_pt'      => 'required|string|max:150',
+            'tujuan_pt_id'   => 'required|exists:perusahaan_tujuan,id',
             'jumlah_diminta' => 'required|integer|min:1',
             'keterangan'     => 'nullable|string',
         ], [
@@ -68,12 +70,10 @@ class TransaksiKeluarController extends Controller
             'suku_cadang_id.exists'   => 'Suku cadang tidak valid.',
             'kendaraan_id.required'   => 'Kendaraan pengirim wajib dipilih.',
             'kendaraan_id.exists'      => 'Kendaraan tidak valid.',
-            'no_dokumen.required'     => 'Nomor dokumen wajib diisi.',
-            'no_dokumen.max'          => 'Nomor dokumen maksimal 100 karakter.',
             'no_surat_jalan.required' => 'Nomor surat jalan wajib diisi.',
             'no_surat_jalan.max'      => 'Nomor surat jalan maksimal 100 karakter.',
-            'tujuan_pt.required'      => 'Tujuan PT pengiriman wajib diisi.',
-            'tujuan_pt.max'           => 'Nama PT maksimal 150 karakter.',
+            'tujuan_pt_id.required'   => 'Perusahaan tujuan wajib dipilih.',
+            'tujuan_pt_id.exists'     => 'Perusahaan tujuan tidak valid.',
             'jumlah_diminta.required' => 'Jumlah barang keluar wajib diisi.',
             'jumlah_diminta.integer'  => 'Jumlah barang keluar harus berupa angka.',
             'jumlah_diminta.min'      => 'Jumlah barang keluar minimal 1.',
@@ -93,9 +93,8 @@ class TransaksiKeluarController extends Controller
                 'suku_cadang_id'   => $sukuCadangId,
                 'users'            => auth()->id(),
                 'kendaraan_id'     => $validated['kendaraan_id'],
-                'no_dokumen'       => $validated['no_dokumen'],
                 'no_surat_jalan'   => $validated['no_surat_jalan'],
-                'tujuan_pt'        => $validated['tujuan_pt'],
+                'tujuan_pt_id'     => $validated['tujuan_pt_id'],
                 'jumlah_diminta'   => $requestedQty,
                 'jumlah_terpenuhi' => 0, // diupdate nanti
                 'status'           => 'ditolak', // diupdate nanti
@@ -184,8 +183,9 @@ class TransaksiKeluarController extends Controller
         $transaksiKeluar = TransaksiKeluar::findOrFail($id);
         $sukuCadangs = SukuCadang::all();
         $kendaraans = Kendaraan::all();
+        $perusahaans = \App\Models\PerusahaanTujuan::all();
 
-        return view('transaksi_keluar.edit', compact('transaksiKeluar', 'sukuCadangs', 'kendaraans'));
+        return view('transaksi_keluar.edit', compact('transaksiKeluar', 'sukuCadangs', 'kendaraans', 'perusahaans'));
     }
 
     /**
@@ -198,9 +198,8 @@ class TransaksiKeluarController extends Controller
         $validated = $request->validate([
             'suku_cadang_id' => 'required|exists:suku_cadang,suku_cadang_id',
             'kendaraan_id'   => 'required|exists:kendaraan,kendaraan_id',
-            'no_dokumen'     => 'required|string|max:100',
             'no_surat_jalan' => 'required|string|max:100',
-            'tujuan_pt'      => 'required|string|max:150',
+            'tujuan_pt_id'   => 'required|exists:perusahaan_tujuan,id',
             'jumlah_diminta' => 'required|integer|min:1',
             'keterangan'     => 'nullable|string',
         ], [
@@ -208,12 +207,10 @@ class TransaksiKeluarController extends Controller
             'suku_cadang_id.exists'   => 'Suku cadang tidak valid.',
             'kendaraan_id.required'   => 'Kendaraan pengirim wajib dipilih.',
             'kendaraan_id.exists'      => 'Kendaraan tidak valid.',
-            'no_dokumen.required'     => 'Nomor dokumen wajib diisi.',
-            'no_dokumen.max'          => 'Nomor dokumen maksimal 100 karakter.',
             'no_surat_jalan.required' => 'Nomor surat jalan wajib diisi.',
             'no_surat_jalan.max'      => 'Nomor surat jalan maksimal 100 karakter.',
-            'tujuan_pt.required'      => 'Tujuan PT pengiriman wajib diisi.',
-            'tujuan_pt.max'           => 'Nama PT maksimal 150 karakter.',
+            'tujuan_pt_id.required'   => 'Perusahaan tujuan wajib dipilih.',
+            'tujuan_pt_id.exists'     => 'Perusahaan tujuan tidak valid.',
             'jumlah_diminta.required' => 'Jumlah barang keluar wajib diisi.',
             'jumlah_diminta.integer'  => 'Jumlah barang keluar harus berupa angka.',
             'jumlah_diminta.min'      => 'Jumlah barang keluar minimal 1.',
@@ -318,9 +315,8 @@ class TransaksiKeluarController extends Controller
             $transaksiKeluar->update([
                 'suku_cadang_id'   => $newSukuCadangId,
                 'kendaraan_id'     => $validated['kendaraan_id'],
-                'no_dokumen'       => $validated['no_dokumen'],
                 'no_surat_jalan'   => $validated['no_surat_jalan'],
-                'tujuan_pt'        => $validated['tujuan_pt'],
+                'tujuan_pt_id'     => $validated['tujuan_pt_id'],
                 'jumlah_diminta'   => $newRequestedQty,
                 'jumlah_terpenuhi' => $fulfilledQty,
                 'status'           => $status,
@@ -363,5 +359,14 @@ class TransaksiKeluarController extends Controller
 
         return redirect()->route('transaksi-keluar.index')
             ->with('success', 'Transaksi keluar berhasil dihapus dan alokasi stok dikembalikan.');
+    }
+
+    /**
+     * Cetak Surat Jalan (Delivery Order) untuk Transaksi Keluar.
+     */
+    public function cetakSj($id)
+    {
+        $transaksi = TransaksiKeluar::with(['sukuCadang', 'user', 'kendaraan', 'perusahaanTujuan'])->findOrFail($id);
+        return view('transaksi_keluar.cetak_sj', compact('transaksi'));
     }
 }

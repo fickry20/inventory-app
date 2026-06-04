@@ -66,7 +66,6 @@
                     <thead class="thead-light">
                         <tr>
                             <th width="5%">No</th>
-                            <th>No. Dokumen</th>
                             <th>No. Surat Jalan</th>
                             <th>Suku Cadang</th>
                             <th class="text-right" width="8%">Kuantitas</th>
@@ -81,7 +80,6 @@
                         @forelse($transaksiMasuks as $index => $transaksi)
                             <tr>
                                 <td>{{ $transaksiMasuks->firstItem() + $index }}</td>
-                                <td class="font-weight-bold text-gray-900">{{ $transaksi->transaksi_masuk_no_dokumen }}</td>
                                 <td>{{ $transaksi->transaksi_masuk_no_surat_jalan }}</td>
                                 <td>
                                     @if($transaksi->sukuCadang)
@@ -100,9 +98,14 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($transaksi->supplier)
-                                        <span class="badge badge-secondary px-2 py-1 text-uppercase">{{ $transaksi->supplier->supplier_plat_kendaraan }}</span>
-                                        <div class="small text-muted">{{ $transaksi->supplier->supplier_nama_driver }}</div>
+                                    @if($transaksi->driver)
+                                        <span class="badge badge-secondary px-2 py-1 text-uppercase">{{ $transaksi->driver->plat_kendaraan }}</span>
+                                        <div class="small text-muted mb-1">{{ $transaksi->driver->nama_driver }}</div>
+                                        @if($transaksi->driver->foto_sj)
+                                            <a href="{{ asset('storage/' . $transaksi->driver->foto_sj) }}" target="_blank" class="btn btn-xs btn-outline-info font-weight-bold py-0 px-1" style="font-size: 10px;">
+                                                <i class="fas fa-image mr-1"></i> Foto SJ
+                                            </a>
+                                        @endif
                                     @else
                                         <span class="text-muted small">-</span>
                                     @endif

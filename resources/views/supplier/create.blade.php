@@ -58,31 +58,9 @@
 
                     <!-- Kolom Kanan -->
                     <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="supplier_plat_kendaraan" class="font-weight-bold text-gray-900">Plat Kendaraan Pengantar <span class="text-danger">*</span></label>
-                            <input type="text" name="supplier_plat_kendaraan" id="supplier_plat_kendaraan" 
-                                class="form-control @error('supplier_plat_kendaraan') is-invalid @enderror" 
-                                placeholder="Masukkan plat kendaraan (contoh: B 1234 CD)" 
-                                value="{{ old('supplier_plat_kendaraan') }}" required>
-                            @error('supplier_plat_kendaraan')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="supplier_nama_driver" class="font-weight-bold text-gray-900">Nama Driver Pengantar <span class="text-danger">*</span></label>
-                            <input type="text" name="supplier_nama_driver" id="supplier_nama_driver" 
-                                class="form-control @error('supplier_nama_driver') is-invalid @enderror" 
-                                placeholder="Masukkan nama lengkap driver pengantar" 
-                                value="{{ old('supplier_nama_driver') }}" required>
-                            @error('supplier_nama_driver')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="alert alert-info mt-4">
+                        <div class="alert alert-info">
                             <h5><i class="fas fa-info-circle mr-1"></i> Informasi</h5>
-                            <p class="mb-0 small">Field bertanda bintang (<span class="text-danger">*</span>) bersifat wajib diisi. Pastikan data yang dimasukkan sudah benar.</p>
+                            <p class="mb-0 small">Setelah supplier berhasil dibuat, Anda dapat menambahkan daftar driver dan kendaraan yang valid pada halaman edit supplier.</p>
                         </div>
                     </div>
                 </div>

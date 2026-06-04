@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedInteger('transaksi_masuk_supplier_id');
             $table->unsignedInteger('transaksi_masuk_users_id');
             $table->unsignedInteger('transaksi_masuk_kendaraan_id')->nullable();
-            $table->string('transaksi_masuk_no_dokumen', 100);
+            $table->unsignedInteger('driver_id')->nullable();
             $table->string('transaksi_masuk_no_surat_jalan', 100);
             $table->integer('transaksi_masuk_jumlah');
             $table->text('transaksi_masuk_keterangan')->nullable();
@@ -44,6 +44,11 @@ return new class extends Migration
                   ->references('kendaraan_id')
                   ->on('kendaraan')
                   ->onDelete('cascade');
+
+            $table->foreign('driver_id')
+                  ->references('id')
+                  ->on('drivers')
+                  ->onDelete('set null');
         });
     }
 

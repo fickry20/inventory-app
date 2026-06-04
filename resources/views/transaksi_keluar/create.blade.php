@@ -70,17 +70,6 @@
                     <!-- Kolom Kanan -->
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="no_dokumen" class="font-weight-bold text-gray-900">No. Dokumen Pengeluaran <span class="text-danger">*</span></label>
-                            <input type="text" name="no_dokumen" id="no_dokumen" 
-                                class="form-control @error('no_dokumen') is-invalid @enderror" 
-                                placeholder="Masukkan nomor dokumen (contoh: DOC-OUT-001)" 
-                                value="{{ old('no_dokumen') }}" required>
-                            @error('no_dokumen')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
                             <label for="no_surat_jalan" class="font-weight-bold text-gray-900">No. Surat Jalan Pengeluaran <span class="text-danger">*</span></label>
                             <input type="text" name="no_surat_jalan" id="no_surat_jalan" 
                                 class="form-control @error('no_surat_jalan') is-invalid @enderror" 
@@ -92,12 +81,17 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="tujuan_pt" class="font-weight-bold text-gray-900">Tujuan PT / Perusahaan Penerima <span class="text-danger">*</span></label>
-                            <input type="text" name="tujuan_pt" id="tujuan_pt" 
-                                class="form-control @error('tujuan_pt') is-invalid @enderror" 
-                                placeholder="Masukkan nama PT tujuan (contoh: PT. Harapan Bangsa)" 
-                                value="{{ old('tujuan_pt') }}" required>
-                            @error('tujuan_pt')
+                            <label for="tujuan_pt_id" class="font-weight-bold text-gray-900">Tujuan PT / Perusahaan Penerima <span class="text-danger">*</span></label>
+                            <select name="tujuan_pt_id" id="tujuan_pt_id" 
+                                class="form-control @error('tujuan_pt_id') is-invalid @enderror" required>
+                                <option value="" disabled selected>-- Pilih Perusahaan Penerima --</option>
+                                @foreach($perusahaans as $perusahaan)
+                                    <option value="{{ $perusahaan->id }}" {{ old('tujuan_pt_id') == $perusahaan->id ? 'selected' : '' }}>
+                                        {{ $perusahaan->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('tujuan_pt_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

@@ -22,9 +22,12 @@ class Supplier extends Model
         'supplier_nama',
         'supplier_kontak',
         'supplier_alamat',
-        'supplier_plat_kendaraan',
-        'supplier_nama_driver',
     ];
+
+    public function drivers()
+    {
+        return $this->hasMany(Driver::class, 'supplier_id', 'supplier_id');
+    }
 
     public function sukuCadang()
     {
