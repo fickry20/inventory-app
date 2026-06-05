@@ -82,7 +82,7 @@ class TransaksiMasukController extends Controller
             'transaksi_masuk_jumlah.min'              => 'Kuantitas barang masuk minimal 1.',
         ]);
 
-        DB::transaction(function () use ($validated) {
+        $transaksi = DB::transaction(function () use ($validated) {
             $driver = \App\Models\Driver::findOrFail($validated['driver_id']);
 
             // 1. Simpan Transaksi Masuk
@@ -109,7 +109,12 @@ class TransaksiMasukController extends Controller
             // 3. Tambahkan stok total di Suku Cadang
             $sukuCadang = SukuCadang::findOrFail($validated['transaksi_masuk_suku_cadang_id']);
             $sukuCadang->increment('suku_cadang_stok_total', $validated['transaksi_masuk_jumlah']);
+
+            return $transaksi;
         });
+
+        $transaksi->load('sukuCadang');
+        \App\Helpers\ActivityLogger::log('CREATE_TRANSAKSI_MASUK', $transaksi, 'Mencatat barang masuk: ' . $transaksi->transaksi_masuk_jumlah . ' pcs suku cadang ' . ($transaksi->sukuCadang->suku_cadang_nama ?? 'Dihapus') . ' dengan nomor surat jalan ' . $transaksi->transaksi_masuk_no_surat_jalan);
 
         return redirect()->route('transaksi-masuk.index')
             ->with('success', 'Transaksi masuk berhasil dicatat dan batch FIFO diaktifkan.');
@@ -231,6 +236,8 @@ class TransaksiMasukController extends Controller
             ]);
         });
 
+        \App\Helpers\ActivityLogger::log('UPDATE_TRANSAKSI_MASUK', $transaksiMasuk, 'Mengubah data transaksi masuk dengan nomor surat jalan ' . $transaksiMasuk->transaksi_masuk_no_surat_jalan);
+
         return redirect()->route('transaksi-masuk.index')
             ->with('success', 'Transaksi masuk berhasil diperbarui.');
     }
@@ -268,6 +275,8 @@ class TransaksiMasukController extends Controller
             // Soft delete transaksi masuk
             $transaksiMasuk->delete();
         });
+
+        \App\Helpers\ActivityLogger::log('DELETE_TRANSAKSI_MASUK', $transaksiMasuk, 'Menghapus transaksi masuk dengan nomor surat jalan ' . $transaksiMasuk->transaksi_masuk_no_surat_jalan);
 
         return redirect()->route('transaksi-masuk.index')
             ->with('success', 'Transaksi masuk berhasil dihapus.');

@@ -73,7 +73,7 @@ class UserController extends Controller
             'users_role.in'                => 'Role user tidak valid.',
         ]);
 
-        User::create([
+        $user = User::create([
             'users_nik'           => $validated['users_nik'],
             'users_username'      => $validated['users_username'],
             'users_email'         => $validated['users_email'],
@@ -82,6 +82,8 @@ class UserController extends Controller
             'users_nomor_telepon' => $validated['users_nomor_telepon'],
             'users_role'          => $validated['users_role'],
         ]);
+
+        \App\Helpers\ActivityLogger::log('CREATE_USER', $user, 'Menambahkan user baru: ' . $user->users_username . ' (Role: ' . $user->users_role . ')');
 
         return redirect()->route('users.index')
             ->with('success', 'Akun user berhasil dibuat.');
@@ -163,6 +165,8 @@ class UserController extends Controller
 
         $user->update($updateData);
 
+        \App\Helpers\ActivityLogger::log('UPDATE_USER', $user, 'Mengubah data user: ' . $user->users_username);
+
         return redirect()->route('users.index')
             ->with('success', 'Data user berhasil diperbarui.');
     }
@@ -178,6 +182,8 @@ class UserController extends Controller
         if ($user->users_id == auth()->id()) {
             return back()->with('error', 'Keamanan Sistem: Anda tidak diizinkan menghapus akun Anda sendiri yang sedang aktif.');
         }
+
+        \App\Helpers\ActivityLogger::log('DELETE_USER', $user, 'Menghapus user: ' . $user->users_username);
 
         $user->delete();
 

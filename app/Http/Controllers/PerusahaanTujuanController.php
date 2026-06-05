@@ -50,7 +50,9 @@ class PerusahaanTujuanController extends Controller
             'kontak.max'    => 'Kontak maksimal 100 karakter.',
         ]);
 
-        PerusahaanTujuan::create($validated);
+        $perusahaan = PerusahaanTujuan::create($validated);
+
+        \App\Helpers\ActivityLogger::log('CREATE_PERUSAHAAN_TUJUAN', $perusahaan, 'Menambahkan perusahaan tujuan baru: ' . $perusahaan->nama);
 
         return redirect()->route('perusahaan-tujuan.index')
             ->with('success', 'Data perusahaan tujuan berhasil ditambahkan.');
@@ -84,6 +86,8 @@ class PerusahaanTujuanController extends Controller
 
         $perusahaan->update($validated);
 
+        \App\Helpers\ActivityLogger::log('UPDATE_PERUSAHAAN_TUJUAN', $perusahaan, 'Mengubah data perusahaan tujuan: ' . $perusahaan->nama);
+
         return redirect()->route('perusahaan-tujuan.index')
             ->with('success', 'Data perusahaan tujuan berhasil diperbarui.');
     }
@@ -99,6 +103,8 @@ class PerusahaanTujuanController extends Controller
         if ($perusahaan->transaksiKeluar()->exists()) {
             return back()->with('error', 'Perusahaan tujuan tidak dapat dihapus karena telah digunakan dalam transaksi keluar.');
         }
+
+        \App\Helpers\ActivityLogger::log('DELETE_PERUSAHAAN_TUJUAN', $perusahaan, 'Menghapus perusahaan tujuan: ' . $perusahaan->nama);
 
         $perusahaan->delete();
 

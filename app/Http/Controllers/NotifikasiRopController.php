@@ -30,6 +30,9 @@ class NotifikasiRopController extends Controller
             'rop_sudah_ditangani' => true,
         ]);
 
+        $notification->load('sukuCadang');
+        \App\Helpers\ActivityLogger::log('RESOLVE_ROP', $notification, 'Menyelesaikan peringatan ROP untuk suku cadang: ' . ($notification->sukuCadang->suku_cadang_nama ?? 'Dihapus'));
+
         return redirect()->route('notifikasi-rop.index')
             ->with('success', 'Notifikasi ROP berhasil ditangani (ditandai selesai).');
     }

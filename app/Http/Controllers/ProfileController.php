@@ -77,6 +77,9 @@ class ProfileController extends Controller
 
         $user->update($updateData);
 
+        // Log profile update activity
+        \App\Helpers\ActivityLogger::log('UPDATE_PROFILE', $user, 'Memperbarui data profil / password');
+
         return redirect()->route('profile')
             ->with('success', 'Profil Anda berhasil diperbarui.');
     }

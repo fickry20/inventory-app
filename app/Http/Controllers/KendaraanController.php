@@ -55,7 +55,9 @@ class KendaraanController extends Controller
             'kendaraan_nama_driver.max'      => 'Nama driver maksimal 150 karakter.',
         ]);
 
-        Kendaraan::create($validated);
+        $kendaraan = Kendaraan::create($validated);
+
+        \App\Helpers\ActivityLogger::log('CREATE_KENDARAAN', $kendaraan, 'Menambahkan kendaraan baru: ' . $kendaraan->kendaraan_plat . ' (Driver: ' . $kendaraan->kendaraan_nama_driver . ')');
 
         return redirect()->route('kendaraan.index')
             ->with('success', 'Data kendaraan berhasil ditambahkan.');
@@ -98,6 +100,8 @@ class KendaraanController extends Controller
 
         $kendaraan->update($validated);
 
+        \App\Helpers\ActivityLogger::log('UPDATE_KENDARAAN', $kendaraan, 'Mengubah data kendaraan: ' . $kendaraan->kendaraan_plat);
+
         return redirect()->route('kendaraan.index')
             ->with('success', 'Data kendaraan berhasil diperbarui.');
     }
@@ -108,6 +112,9 @@ class KendaraanController extends Controller
     public function destroy($id)
     {
         $kendaraan = Kendaraan::findOrFail($id);
+
+        \App\Helpers\ActivityLogger::log('DELETE_KENDARAAN', $kendaraan, 'Menghapus kendaraan: ' . $kendaraan->kendaraan_plat);
+
         $kendaraan->delete();
 
         return redirect()->route('kendaraan.index')

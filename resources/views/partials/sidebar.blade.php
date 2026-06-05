@@ -58,6 +58,14 @@
                 <span>Manajemen User</span>
             </a>
         </li>
+
+        <!-- Nav Item - Log Aktivitas -->
+        <li class="nav-item {{ Request::routeIs('activity-log.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('activity-log.index') }}">
+                <i class="fas fa-fw fa-list-alt"></i>
+                <span>Log Aktivitas</span>
+            </a>
+        </li>
     @endif
 
     @if(auth()->check() && auth()->user()->users_role === 'staf_inventory')
@@ -111,6 +119,14 @@
                 @endif
             </a>
         </li>
+
+        <!-- Nav Item - Log Aktivitas -->
+        <li class="nav-item {{ Request::routeIs('activity-log.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('activity-log.index') }}">
+                <i class="fas fa-fw fa-list-alt"></i>
+                <span>Log Aktivitas</span>
+            </a>
+        </li>
     @endif
 
     @if(auth()->check() && auth()->user()->users_role === 'admin_gudang')
@@ -135,6 +151,14 @@
             <a class="nav-link" href="{{ route('transaksi-keluar.index') }}">
                 <i class="fas fa-fw fa-upload"></i>
                 <span>Barang Keluar</span>
+            </a>
+        </li>
+
+        <!-- Nav Item - Log Aktivitas -->
+        <li class="nav-item {{ Request::routeIs('activity-log.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('activity-log.index') }}">
+                <i class="fas fa-fw fa-list-alt"></i>
+                <span>Log Aktivitas</span>
             </a>
         </li>
     @endif

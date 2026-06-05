@@ -78,7 +78,9 @@ class SukuCadangController extends Controller
             'suku_cadang_stok_minimum.min'       => 'Stok minimum tidak boleh kurang dari 0.',
         ]);
 
-        SukuCadang::create($validated);
+        $sukuCadang = SukuCadang::create($validated);
+
+        \App\Helpers\ActivityLogger::log('CREATE_SUKU_CADANG', $sukuCadang, 'Menambahkan suku cadang baru: ' . $sukuCadang->suku_cadang_nama . ' (' . $sukuCadang->suku_cadang_kode . ')');
 
         return redirect()->route('suku-cadang.index')
             ->with('success', 'Data suku cadang berhasil ditambahkan.');
@@ -140,6 +142,8 @@ class SukuCadangController extends Controller
 
         $sukuCadang->update($validated);
 
+        \App\Helpers\ActivityLogger::log('UPDATE_SUKU_CADANG', $sukuCadang, 'Mengubah data suku cadang: ' . $sukuCadang->suku_cadang_nama . ' (' . $sukuCadang->suku_cadang_kode . ')');
+
         return redirect()->route('suku-cadang.index')
             ->with('success', 'Data suku cadang berhasil diperbarui.');
     }
@@ -150,6 +154,9 @@ class SukuCadangController extends Controller
     public function destroy($id)
     {
         $sukuCadang = SukuCadang::findOrFail($id);
+
+        \App\Helpers\ActivityLogger::log('DELETE_SUKU_CADANG', $sukuCadang, 'Menghapus suku cadang: ' . $sukuCadang->suku_cadang_nama . ' (' . $sukuCadang->suku_cadang_kode . ')');
+
         $sukuCadang->delete();
 
         return redirect()->route('suku-cadang.index')

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityLogger;
 
 class AuthController extends Controller
 {
@@ -57,6 +58,9 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        // Log login activity
+        ActivityLogger::log('LOGIN', null, 'Melakukan login ke sistem');
+
         $route = $this->getRedirectRouteForRole($user->users_role);
         return redirect()->intended(route($route))
             ->with('success', 'Selamat datang, ' . $user->users_username . '!');
@@ -84,6 +88,10 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
+        if (Auth::check()) {
+            ActivityLogger::log('LOGOUT', null, 'Melakukan logout dari sistem');
+        }
+
         Auth::logout();
 
         $request->session()->invalidate();
@@ -93,3 +101,4 @@ class AuthController extends Controller
             ->with('success', 'Anda telah berhasil logout.');
     }
 }
+

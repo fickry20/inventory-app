@@ -40,7 +40,9 @@ class DriverController extends Controller
 
         $validated['supplier_id'] = $supplier->supplier_id;
 
-        Driver::create($validated);
+        $driver = Driver::create($validated);
+
+        \App\Helpers\ActivityLogger::log('CREATE_DRIVER', $driver, 'Menambahkan driver baru ' . $driver->nama_driver . ' untuk supplier ' . $supplier->supplier_nama);
 
         return redirect()->route('supplier.edit', $supplier->supplier_id)
             ->with('success', 'Driver berhasil ditambahkan.');
@@ -81,6 +83,8 @@ class DriverController extends Controller
 
         $driver->update($validated);
 
+        \App\Helpers\ActivityLogger::log('UPDATE_DRIVER', $driver, 'Mengubah data driver: ' . $driver->nama_driver);
+
         return redirect()->route('supplier.edit', $driver->supplier_id)
             ->with('success', 'Data driver berhasil diperbarui.');
     }
@@ -97,6 +101,8 @@ class DriverController extends Controller
         if ($driver->foto_sj) {
             Storage::disk('public')->delete($driver->foto_sj);
         }
+
+        \App\Helpers\ActivityLogger::log('DELETE_DRIVER', $driver, 'Menghapus driver: ' . $driver->nama_driver);
 
         $driver->delete();
 

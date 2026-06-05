@@ -1,0 +1,340 @@
+/* Custom Palette Theme override for SB Admin 2 */
+
+/* Body & Backgrounds */
+body {
+    background-color: #FFF9D2 !important; /* Pale yellow background */
+    color: #4a4a4a !important;
+}
+
+#wrapper {
+    background-color: #FFF9D2 !important;
+}
+
+#content-wrapper {
+    background-color: #FFF9D2 !important;
+}
+
+/* Sidebar Styling */
+.sidebar.bg-gradient-primary {
+    background-color: #8CC0EB !important; /* Medium blue */
+    background-image: linear-gradient(180deg, #8CC0EB 0%, #BFDDF0 100%) !important;
+    border-right: 1px solid #FFEBCC !important;
+}
+
+.sidebar-dark .nav-item .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.sidebar-dark .nav-item .nav-link i {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.sidebar-dark .nav-item .nav-link:hover {
+    color: #FFF9D2 !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.sidebar-dark .nav-item .nav-link:hover i {
+    color: #FFF9D2 !important;
+}
+
+.sidebar-dark .nav-item.active .nav-link {
+    color: #FFEBCC !important; /* Pale peach */
+    font-weight: 700;
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-left: 4px solid #FFEBCC !important;
+}
+
+.sidebar-dark .nav-item.active .nav-link i {
+    color: #FFEBCC !important;
+}
+
+.sidebar-dark .sidebar-brand {
+    color: #ffffff !important;
+    background-color: #8CC0EB !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.sidebar-dark #sidebarToggle {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+}
+.sidebar-dark #sidebarToggle:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Topbar Styling */
+.topbar {
+    background-color: #BFDDF0 !important; /* Pale blue */
+    border-bottom: 1px solid #FFEBCC !important;
+}
+
+.topbar .navbar-search .form-control {
+    background-color: #ffffff !important;
+    border: 1px solid #FFEBCC !important;
+}
+
+.topbar .navbar-search .btn {
+    background-color: #8CC0EB !important;
+    border-color: #8CC0EB !important;
+    color: #ffffff !important;
+}
+
+.topbar .navbar-search .btn:hover {
+    background-color: #7ab0db !important;
+}
+
+.topbar .nav-item .nav-link i {
+    color: #5c8fc2 !important;
+}
+
+.topbar .topbar-divider {
+    border-right: 1px solid #FFEBCC !important;
+}
+
+/* Card Styling */
+.card {
+    border: 1px solid #FFEBCC !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #BFDDF0 !important; /* Pale blue header */
+    border-bottom: 1px solid #FFEBCC !important;
+    padding: 0.75rem 1.25rem !important;
+}
+
+.card-header h6 {
+    color: #3b61a1 !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+}
+
+/* Page Heading */
+h1.h3.text-gray-800 {
+    color: #3b61a1 !important;
+    font-weight: 700 !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #8CC0EB !important;
+    border-color: #8CC0EB !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(140, 192, 235, 0.3) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #7ab0db !important;
+    border-color: #7ab0db !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px rgba(122, 176, 219, 0.4) !important;
+}
+
+.btn-secondary {
+    background-color: #FFEBCC !important;
+    border-color: #FFEBCC !important;
+    color: #6d4b1a !important;
+    font-weight: 600 !important;
+}
+.btn-secondary:hover {
+    background-color: #ffd8a8 !important;
+    border-color: #ffd8a8 !important;
+    color: #6d4b1a !important;
+}
+
+.btn-info {
+    background-color: #BFDDF0 !important;
+    border-color: #BFDDF0 !important;
+    color: #2c53b2 !important;
+}
+.btn-info:hover {
+    background-color: #a7cfe8 !important;
+    border-color: #a7cfe8 !important;
+    color: #2c53b2 !important;
+}
+
+.btn-danger {
+    background-color: #fce4d6 !important;
+    border-color: #f8cbad !important;
+    color: #c65911 !important;
+}
+.btn-danger:hover {
+    background-color: #f8bba1 !important;
+    border-color: #f8bba1 !important;
+}
+
+/* Tables */
+.table {
+    color: #4a4a4a !important;
+}
+.table thead th {
+    background-color: #BFDDF0 !important;
+    color: #3b61a1 !important;
+    border-color: #FFEBCC !important;
+    font-weight: 700 !important;
+}
+.table td, .table th {
+    border-top: 1px solid #FFEBCC !important;
+    vertical-align: middle !important;
+}
+.table-bordered {
+    border: 1px solid #FFEBCC !important;
+}
+.table-bordered th, .table-bordered td {
+    border: 1px solid #FFEBCC !important;
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 249, 210, 0.5) !important;
+}
+
+/* Badges and tags */
+.badge-primary {
+    background-color: #8CC0EB !important;
+    color: #fff !important;
+}
+
+.badge-info {
+    background-color: #BFDDF0 !important;
+    color: #2c53b2 !important;
+}
+
+.badge-success {
+    background-color: #e2f0d9 !important;
+    color: #385723 !important;
+    border: 1px solid #c5e0b4 !important;
+}
+
+.badge-warning {
+    background-color: #fff2cc !important;
+    color: #7f6000 !important;
+    border: 1px solid #ffd966 !important;
+}
+
+.badge-danger {
+    background-color: #fce4d6 !important;
+    color: #c65911 !important;
+    border: 1px solid #f8cbad !important;
+}
+
+.badge-secondary {
+    background-color: #e7e7e7 !important;
+    color: #555555 !important;
+    border: 1px solid #d3d3d3 !important;
+}
+
+/* Forms and Inputs */
+.form-control {
+    border: 1px solid #FFEBCC !important;
+    border-radius: 0.375rem !important;
+}
+.form-control:focus {
+    border-color: #8CC0EB !important;
+    box-shadow: 0 0 0 0.2rem rgba(140, 192, 235, 0.25) !important;
+}
+
+/* Alert Boxes */
+.alert-success {
+    background-color: #e2f0d9 !important;
+    border-color: #c5e0b4 !important;
+    color: #385723 !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #a5d6a7 !important;
+}
+
+.alert-danger {
+    background-color: #fce4d6 !important;
+    border-color: #f8cbad !important;
+    color: #c65911 !important;
+}
+.border-left-danger {
+    border-left: 0.25rem solid #ffab91 !important;
+}
+
+.alert-warning {
+    background-color: #fff2cc !important;
+    border-color: #ffd966 !important;
+    color: #7f6000 !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #ffe082 !important;
+}
+
+.alert-info {
+    background-color: #eaf2f8 !important;
+    border-color: #d4e6f1 !important;
+    color: #2471a3 !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #85c1e9 !important;
+}
+
+/* Dashboard dynamic style overrides */
+.border-left-primary {
+    border-left: 0.25rem solid #8CC0EB !important;
+}
+
+.text-primary {
+    color: #3b61a1 !important;
+}
+.text-success {
+    color: #385723 !important;
+}
+.text-danger {
+    color: #c65911 !important;
+}
+.text-warning {
+    color: #7f6000 !important;
+}
+
+.bg-primary-custom {
+    background-color: rgba(140, 192, 235, 0.1) !important;
+}
+
+/* Login Page specific override */
+body.bg-gradient-primary {
+    background-color: #FFF9D2 !important;
+    background-image: linear-gradient(180deg, #FFF9D2 10%, #FFEBCC 100%) !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-login-image {
+    background: linear-gradient(135deg, #8CC0EB 0%, #BFDDF0 100%) !important;
+}
+
+/* Footer Styling */
+footer.sticky-footer {
+    background-color: #BFDDF0 !important;
+    border-top: 1px solid #FFEBCC !important;
+    padding: 1rem 0 !important;
+}
+
+/* Pagination custom */
+.page-item.active .page-link {
+    background-color: #8CC0EB !important;
+    border-color: #8CC0EB !important;
+    color: #fff !important;
+}
+.page-link {
+    color: #3b61a1 !important;
+    border-color: #FFEBCC !important;
+}
+.page-link:hover {
+    background-color: #FFEBCC !important;
+    color: #6d4b1a !important;
+}
+
+/* Scroll to top button */
+.scroll-to-top {
+    background-color: #8CC0EB !important;
+}
+.scroll-to-top:hover {
+    background-color: #7ab0db !important;
+}

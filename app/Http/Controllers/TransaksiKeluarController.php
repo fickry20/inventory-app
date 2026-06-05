@@ -89,7 +89,7 @@ class TransaksiKeluarController extends Controller
             return back()->withErrors(['jumlah_diminta' => 'Stok tidak cukup! (Stok saat ini: ' . $sukuCadang->suku_cadang_stok_total . ')'])->withInput();
         }
 
-        DB::transaction(function () use ($validated) {
+        $transaksi = DB::transaction(function () use ($validated) {
             $sukuCadangId = $validated['suku_cadang_id'];
             $requestedQty = $validated['jumlah_diminta'];
 
@@ -174,7 +174,12 @@ class TransaksiKeluarController extends Controller
                     }
                 }
             }
+
+            return $transaksi;
         });
+
+        $transaksi->load('sukuCadang');
+        \App\Helpers\ActivityLogger::log('CREATE_TRANSAKSI_KELUAR', $transaksi, 'Mencatat barang keluar: ' . $transaksi->jumlah_terpenuhi . ' pcs suku cadang ' . ($transaksi->sukuCadang->suku_cadang_nama ?? 'Dihapus') . ' dengan nomor surat jalan ' . $transaksi->no_surat_jalan);
 
         return redirect()->route('transaksi-keluar.index')
             ->with('success', 'Transaksi keluar berhasil diproses dengan metode pemotongan FIFO.');
@@ -329,6 +334,8 @@ class TransaksiKeluarController extends Controller
             ]);
         });
 
+        \App\Helpers\ActivityLogger::log('UPDATE_TRANSAKSI_KELUAR', $transaksiKeluar, 'Mengubah data transaksi keluar dengan nomor surat jalan ' . $transaksiKeluar->no_surat_jalan);
+
         return redirect()->route('transaksi-keluar.index')
             ->with('success', 'Transaksi keluar berhasil diperbarui dan alokasi FIFO disesuaikan.');
     }
@@ -362,6 +369,8 @@ class TransaksiKeluarController extends Controller
             $transaksiKeluar->delete();
         });
 
+        \App\Helpers\ActivityLogger::log('DELETE_TRANSAKSI_KELUAR', $transaksiKeluar, 'Menghapus transaksi keluar dengan nomor surat jalan ' . $transaksiKeluar->no_surat_jalan);
+
         return redirect()->route('transaksi-keluar.index')
             ->with('success', 'Transaksi keluar berhasil dihapus dan alokasi stok dikembalikan.');
     }
@@ -372,6 +381,9 @@ class TransaksiKeluarController extends Controller
     public function cetakSj($id)
     {
         $transaksi = TransaksiKeluar::with(['sukuCadang', 'user', 'kendaraan', 'perusahaanTujuan'])->findOrFail($id);
+
+        \App\Helpers\ActivityLogger::log('PRINT_SURAT_JALAN', $transaksi, 'Mencetak surat jalan untuk transaksi keluar dengan nomor surat jalan ' . $transaksi->no_surat_jalan);
+
         return view('transaksi_keluar.cetak_sj', compact('transaksi'));
     }
 }

@@ -52,7 +52,9 @@ class SupplierController extends Controller
             'supplier_alamat.required'         => 'Alamat supplier wajib diisi.',
         ]);
 
-        Supplier::create($validated);
+        $supplier = Supplier::create($validated);
+
+        \App\Helpers\ActivityLogger::log('CREATE_SUPPLIER', $supplier, 'Menambahkan supplier baru: ' . $supplier->supplier_nama);
 
         return redirect()->route('supplier.index')
             ->with('success', 'Data supplier berhasil ditambahkan.');
@@ -88,6 +90,8 @@ class SupplierController extends Controller
 
         $supplier->update($validated);
 
+        \App\Helpers\ActivityLogger::log('UPDATE_SUPPLIER', $supplier, 'Mengubah data supplier: ' . $supplier->supplier_nama);
+
         return redirect()->route('supplier.index')
             ->with('success', 'Data supplier berhasil diperbarui.');
     }
@@ -98,6 +102,9 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
+
+        \App\Helpers\ActivityLogger::log('DELETE_SUPPLIER', $supplier, 'Menghapus supplier: ' . $supplier->supplier_nama);
+
         $supplier->delete();
 
         return redirect()->route('supplier.index')

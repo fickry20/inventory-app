@@ -9,6 +9,7 @@ use App\Http\Controllers\TransaksiMasukController;
 use App\Http\Controllers\TransaksiKeluarController;
 use App\Http\Controllers\NotifikasiRopController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ActivityLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,5 +83,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/supplier/{supplier_id}/drivers', [\App\Http\Controllers\DriverController::class, 'getDriversBySupplier'])->name('api.supplier.drivers');
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile');
     Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index');
 });
 
