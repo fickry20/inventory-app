@@ -35,7 +35,7 @@ Route::get('/', function () {
                 return redirect()->route('transaksi-masuk.index');
         }
     }
-    return redirect()->route('login');
+    return view('welcome');
 });
 
 // ─── Auth Routes (Guest Only) ──────────────────────────────────────────────
