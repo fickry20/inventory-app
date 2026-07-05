@@ -29,6 +29,26 @@ class SukuCadang extends Model
         'suku_cadang_stok_minimum',
     ];
 
+    protected static function booted()
+    {
+        static::saved(function ($sukuCadang) {
+            if ($sukuCadang->suku_cadang_stok_total <= $sukuCadang->suku_cadang_reorder_point) {
+                $alreadyNotified = NotifikasiRop::where('suku_cadang_id', $sukuCadang->suku_cadang_id)
+                    ->where('rop_sudah_ditangani', false)
+                    ->exists();
+
+                if (!$alreadyNotified) {
+                    NotifikasiRop::create([
+                        'suku_cadang_id'      => $sukuCadang->suku_cadang_id,
+                        'rop_stok_saat_notif' => $sukuCadang->suku_cadang_stok_total,
+                        'rop_rop_saat_notif'  => $sukuCadang->suku_cadang_reorder_point,
+                        'rop_sudah_ditangani' => false,
+                    ]);
+                }
+            }
+        });
+    }
+
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'suku_cadang_supplier_id', 'supplier_id');

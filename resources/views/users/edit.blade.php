@@ -113,11 +113,12 @@
                             @enderror
                         </div>
 
-                        <div class="form-group mt-4">
+                         <div class="form-group mt-4">
                             <label for="password" class="font-weight-bold text-gray-900">Password Login Baru</label>
                             <input type="password" name="password" id="password" 
                                 class="form-control @error('password') is-invalid @enderror" 
-                                placeholder="Kosongkan jika tidak ingin mengubah password">
+                                placeholder="Kosongkan jika tidak ingin mengubah password"
+                                autocomplete="new-password">
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -127,7 +128,8 @@
                             <label for="password_confirmation" class="font-weight-bold text-gray-900">Konfirmasi Password Login Baru</label>
                             <input type="password" name="password_confirmation" id="password_confirmation" 
                                 class="form-control" 
-                                placeholder="Ulangi password login baru">
+                                placeholder="Ulangi password login baru"
+                                autocomplete="new-password">
                         </div>
 
                         <div class="alert alert-warning mt-4 small">

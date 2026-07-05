@@ -152,27 +152,11 @@ class TransaksiKeluarController extends Controller
                 'status'           => $status,
             ]);
 
-            // 4. Kurangi stok total di Suku Cadang
+            // 4. Kurangi stok total di Suku Cadang (memicu ROP alert via model event 'saved')
             if ($fulfilledQty > 0) {
                 $sukuCadang = SukuCadang::findOrFail($sukuCadangId);
-                $sukuCadang->decrement('suku_cadang_stok_total', $fulfilledQty);
-
-                // 5. Cek Reorder Point (ROP) untuk memicu notifikasi
-                $newStock = $sukuCadang->suku_cadang_stok_total;
-                if ($newStock <= $sukuCadang->suku_cadang_reorder_point) {
-                    $alreadyNotified = NotifikasiRop::where('suku_cadang_id', $sukuCadangId)
-                        ->where('rop_sudah_ditangani', false)
-                        ->exists();
-
-                    if (!$alreadyNotified) {
-                        NotifikasiRop::create([
-                            'suku_cadang_id'      => $sukuCadangId,
-                            'rop_stok_saat_notif' => $newStock,
-                            'rop_rop_saat_notif'  => $sukuCadang->suku_cadang_reorder_point,
-                            'rop_sudah_ditangani' => false,
-                        ]);
-                    }
-                }
+                $sukuCadang->suku_cadang_stok_total -= $fulfilledQty;
+                $sukuCadang->save();
             }
 
             return $transaksi;
@@ -252,7 +236,8 @@ class TransaksiKeluarController extends Controller
             // Kembalikan stok total Suku Cadang lama
             if ($transaksiKeluar->jumlah_terpenuhi > 0) {
                 $oldSuku = SukuCadang::findOrFail($transaksiKeluar->suku_cadang_id);
-                $oldSuku->increment('suku_cadang_stok_total', $transaksiKeluar->jumlah_terpenuhi);
+                $oldSuku->suku_cadang_stok_total += $transaksiKeluar->jumlah_terpenuhi;
+                $oldSuku->save();
             }
 
             // --- REAPPLY FIFO DENGAN DATA BARU ---
@@ -298,27 +283,11 @@ class TransaksiKeluarController extends Controller
                 $status = 'sebagian';
             }
 
-            // Update Suku Cadang baru
+            // Update Suku Cadang baru (memicu ROP alert via model event 'saved')
             if ($fulfilledQty > 0) {
                 $newSuku = SukuCadang::findOrFail($newSukuCadangId);
-                $newSuku->decrement('suku_cadang_stok_total', $fulfilledQty);
-
-                // Cek ROP baru
-                $newStock = $newSuku->suku_cadang_stok_total;
-                if ($newStock <= $newSuku->suku_cadang_reorder_point) {
-                    $alreadyNotified = NotifikasiRop::where('suku_cadang_id', $newSukuCadangId)
-                        ->where('rop_sudah_ditangani', false)
-                        ->exists();
-
-                    if (!$alreadyNotified) {
-                        NotifikasiRop::create([
-                            'suku_cadang_id'      => $newSukuCadangId,
-                            'rop_stok_saat_notif' => $newStock,
-                            'rop_rop_saat_notif'  => $newSuku->suku_cadang_reorder_point,
-                            'rop_sudah_ditangani' => false,
-                        ]);
-                    }
-                }
+                $newSuku->suku_cadang_stok_total -= $fulfilledQty;
+                $newSuku->save();
             }
 
             // Update transaksi keluar
@@ -362,7 +331,8 @@ class TransaksiKeluarController extends Controller
             // Kembalikan stok suku cadang
             if ($transaksiKeluar->jumlah_terpenuhi > 0) {
                 $sukuCadang = SukuCadang::findOrFail($transaksiKeluar->suku_cadang_id);
-                $sukuCadang->increment('suku_cadang_stok_total', $transaksiKeluar->jumlah_terpenuhi);
+                $sukuCadang->suku_cadang_stok_total += $transaksiKeluar->jumlah_terpenuhi;
+                $sukuCadang->save();
             }
 
             // Soft delete transaksi

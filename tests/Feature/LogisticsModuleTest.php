@@ -350,4 +350,37 @@ class LogisticsModuleTest extends TestCase
         ]);
         $response->assertStatus(403);
     }
+
+    /**
+     * Test ROP notification triggers automatically on stock decrease.
+     */
+    public function test_rop_notification_triggered_automatically_on_stock_decrease()
+    {
+        $sukuCadang = SukuCadang::create([
+            'suku_cadang_supplier_id' => $this->supplier->supplier_id,
+            'suku_cadang_kode' => 'FL-OIL-999',
+            'suku_cadang_nama' => 'Filter ROP Test',
+            'suku_cadang_kategori' => 'Filter',
+            'suku_cadang_satuan' => 'Pcs',
+            'suku_cadang_stok_total' => 20,
+            'suku_cadang_reorder_point' => 10,
+            'suku_cadang_stok_minimum' => 5,
+        ]);
+
+        $this->assertDatabaseMissing('notifikasi_rop', [
+            'suku_cadang_id' => $sukuCadang->suku_cadang_id,
+        ]);
+
+        // Manually update stock to trigger model save
+        $sukuCadang->update([
+            'suku_cadang_stok_total' => 8,
+        ]);
+
+        $this->assertDatabaseHas('notifikasi_rop', [
+            'suku_cadang_id' => $sukuCadang->suku_cadang_id,
+            'rop_stok_saat_notif' => 8,
+            'rop_rop_saat_notif' => 10,
+            'rop_sudah_ditangani' => false,
+        ]);
+    }
 }

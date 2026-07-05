@@ -70,9 +70,9 @@ class ProfileController extends Controller
             'users_nomor_telepon' => $validated['users_nomor_telepon'],
         ];
 
-        // Jika password diisi, hash password baru
+        // Jika password diisi, simpan password baru (otomatis di-hash oleh model cast)
         if (!empty($validated['password'])) {
-            $updateData['users_password_hash'] = Hash::make($validated['password']);
+            $updateData['users_password_hash'] = $validated['password'];
         }
 
         $user->update($updateData);

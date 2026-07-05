@@ -154,7 +154,8 @@
                                     <label for="password" class="font-weight-bold text-gray-900">Password Baru</label>
                                     <input type="password" name="password" id="password" 
                                         class="form-control @error('password') is-invalid @enderror" 
-                                        placeholder="Kosongkan jika tidak diubah">
+                                        placeholder="Kosongkan jika tidak diubah"
+                                        autocomplete="new-password">
                                     @error('password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -165,7 +166,8 @@
                                     <label for="password_confirmation" class="font-weight-bold text-gray-900">Konfirmasi Password Baru</label>
                                     <input type="password" name="password_confirmation" id="password_confirmation" 
                                         class="form-control" 
-                                        placeholder="Ulangi password baru">
+                                        placeholder="Ulangi password baru"
+                                        autocomplete="new-password">
                                 </div>
                             </div>
                         </div>

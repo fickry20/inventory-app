@@ -106,9 +106,10 @@ class TransaksiMasukController extends Controller
                 'is_habis'        => false,
             ]);
 
-            // 3. Tambahkan stok total di Suku Cadang
+            // 3. Tambahkan stok total di Suku Cadang (memicu ROP alert via model event 'saved')
             $sukuCadang = SukuCadang::findOrFail($validated['transaksi_masuk_suku_cadang_id']);
-            $sukuCadang->increment('suku_cadang_stok_total', $validated['transaksi_masuk_jumlah']);
+            $sukuCadang->suku_cadang_stok_total += $validated['transaksi_masuk_jumlah'];
+            $sukuCadang->save();
 
             return $transaksi;
         });
@@ -193,20 +194,19 @@ class TransaksiMasukController extends Controller
                 if ($oldSukuCadangId != $newSukuCadangId) {
                     // Kurangi stok suku cadang lama
                     $oldSuku = SukuCadang::findOrFail($oldSukuCadangId);
-                    $oldSuku->decrement('suku_cadang_stok_total', $oldJumlah);
+                    $oldSuku->suku_cadang_stok_total -= $oldJumlah;
+                    $oldSuku->save();
 
                     // Tambahkan stok suku cadang baru
                     $newSuku = SukuCadang::findOrFail($newSukuCadangId);
-                    $newSuku->increment('suku_cadang_stok_total', $newJumlah);
+                    $newSuku->suku_cadang_stok_total += $newJumlah;
+                    $newSuku->save();
                 } else {
                     // Jika suku cadang sama tapi kuantitas berubah
                     $diff = $newJumlah - $oldJumlah;
                     $suku = SukuCadang::findOrFail($oldSukuCadangId);
-                    if ($diff > 0) {
-                        $suku->increment('suku_cadang_stok_total', $diff);
-                    } elseif ($diff < 0) {
-                        $suku->decrement('suku_cadang_stok_total', abs($diff));
-                    }
+                    $suku->suku_cadang_stok_total += $diff;
+                    $suku->save();
                 }
 
                 // Update Batch Masuk terkait

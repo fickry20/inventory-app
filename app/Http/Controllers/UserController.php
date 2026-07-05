@@ -77,7 +77,7 @@ class UserController extends Controller
             'users_nik'           => $validated['users_nik'],
             'users_username'      => $validated['users_username'],
             'users_email'         => $validated['users_email'],
-            'users_password_hash' => Hash::make($validated['password']),
+            'users_password_hash' => $validated['password'], // otomatis di-hash oleh model cast
             'users_jabatan'       => $validated['users_jabatan'],
             'users_nomor_telepon' => $validated['users_nomor_telepon'],
             'users_role'          => $validated['users_role'],
@@ -158,9 +158,9 @@ class UserController extends Controller
             'users_role'          => $validated['users_role'],
         ];
 
-        // Jika password diisi, enkripsi dan simpan password baru
+        // Jika password diisi, simpan password baru (otomatis di-hash oleh model cast)
         if (!empty($validated['password'])) {
-            $updateData['users_password_hash'] = Hash::make($validated['password']);
+            $updateData['users_password_hash'] = $validated['password'];
         }
 
         $user->update($updateData);

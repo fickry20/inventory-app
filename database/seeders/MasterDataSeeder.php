@@ -223,5 +223,123 @@ class MasterDataSeeder extends Seeder
             'batch_masuk_id' => $batch1Id,
             'fifo_jumlah_diambil' => 30,
         ]);
+
+        // 9. Seed 10 Suppliers Tambahan (dengan nama perusahaan riil)
+        $supplierNames = [
+            'PT. Astra Otoparts Tbk',
+            'PT. Denso Indonesia',
+            'PT. Gajah Tunggal Tbk',
+            'PT. Kayaba Indonesia',
+            'PT. Nippondenso Indonesia',
+            'PT. Selamat Sempurna Tbk',
+            'PT. Pertamina Lubricants',
+            'PT. GS Battery',
+            'PT. IRC Gajah Tunggal Manufacturing',
+            'PT. Robert Bosch Indonesia',
+        ];
+
+        $supplierIds = [];
+        foreach ($supplierNames as $i => $name) {
+            $supplierIds[] = DB::table('supplier')->insertGetId([
+                'supplier_nama' => $name,
+                'supplier_kontak' => "0812345678" . str_pad($i + 1, 2, '0', STR_PAD_LEFT),
+                'supplier_alamat' => "Kawasan Industri MM2100 Blok A" . ($i + 1) . ", Cikarang, Bekasi",
+                'supplier_created_at' => Carbon::now(),
+                'supplier_updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // 10. Seed 10 Drivers Tambahan
+        foreach ($supplierIds as $idx => $supId) {
+            DB::table('drivers')->insert([
+                'supplier_id' => $supId,
+                'nama_driver' => "Driver Mandiri " . ($idx + 1),
+                'plat_kendaraan' => "B " . rand(1000, 9999) . " " . chr(rand(65, 90)) . chr(rand(65, 90)),
+                'no_surat_jalan' => "SJ-SUP-" . (100 + $idx),
+                'foto_sj' => null,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // 11. Seed 10 Kendaraan Tambahan (Internal)
+        $kendaraanJenis = ['box', 'engkel'];
+        for ($i = 1; $i <= 10; $i++) {
+            DB::table('kendaraan')->insert([
+                'kendaraan_plat' => "B " . rand(1000, 9999) . " KB" . $i,
+                'kendaraan_jenis' => $kendaraanJenis[array_rand($kendaraanJenis)],
+                'kendaraan_nama_driver' => "Driver Internal " . $i,
+                'kendaraan_created_at' => Carbon::now(),
+                'kendaraan_updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // 12. Seed 50 Suku Cadang Tambahan
+        $kategori = ['Filter', 'Brake System', 'Ignition', 'Suspensi', 'Pelumas', 'Electrical', 'Mesin'];
+        
+        $sparepartNames = [
+            'Filter Oli', 'Filter Udara', 'Filter AC', 'Filter Bensin',
+            'Kampas Rem Depan', 'Kampas Rem Belakang', 'Piringan Rem', 'Minyak Rem',
+            'Busi Platinum', 'Busi Iridium', 'Kabel Busi', 'Koil Pengapian',
+            'Shockbreaker Depan', 'Shockbreaker Belakang', 'Per Keong', 'Tierod End',
+            'Oli Mesin 10W-40', 'Oli Mesin 5W-30', 'Oli Transmisi', 'Minyak Power Steering',
+            'Aki Kering 45Ah', 'Aki Basah 60Ah', 'Bohlam Utama H4', 'Sekering Set',
+            'V-Belt Alternator', 'Timing Belt', 'Piston Set', 'Ring Piston',
+            'Packing Kopel', 'Radiator Assembly', 'Selang Radiator', 'Termostat',
+            'Water Pump', 'Alternator Assembly', 'Motor Starter', 'Sensor Oksigen',
+            'Kampas Kopling', 'Matahari Kopling', 'Master Kopling Atas', 'Master Kopling Bawah',
+            'Laher Roda Depan', 'Laher Roda Belakang', 'Karet Wiper Set', 'Air Wiper Fluid',
+            'Gasket Silinder Kop', 'Sil klep', 'Nosel Injektor', 'Klem Knalpot',
+            'Dongkrak Botol', 'Kabel Jumper Aki'
+        ];
+
+        for ($i = 0; $i < 50; $i++) {
+            $name = $sparepartNames[$i];
+            $supplierId = $supplierIds[array_rand($supplierIds)];
+            
+            $kat = $kategori[array_rand($kategori)];
+            if (strpos($name, 'Filter') !== false) $kat = 'Filter';
+            elseif (strpos($name, 'Rem') !== false) $kat = 'Brake System';
+            elseif (strpos($name, 'Busi') !== false || strpos($name, 'Pengapian') !== false) $kat = 'Ignition';
+            elseif (strpos($name, 'Oli') !== false || strpos($name, 'Minyak') !== false) $kat = 'Pelumas';
+            elseif (strpos($name, 'Aki') !== false || strpos($name, 'Bohlam') !== false || strpos($name, 'Sekering') !== false) $kat = 'Electrical';
+            
+            $sat = 'Pcs';
+            if (strpos($name, 'Rem') !== false || strpos($name, 'Karet Wiper') !== false) $sat = 'Set';
+            elseif (strpos($name, 'Oli') !== false || strpos($name, 'Fluid') !== false) $sat = 'Liter';
+
+            $codePrefix = strtoupper(substr(str_replace(' ', '', $kat), 0, 3));
+            $code = $codePrefix . "-" . str_pad($i + 1, 3, '0', STR_PAD_LEFT);
+
+            DB::table('suku_cadang')->insert([
+                'suku_cadang_supplier_id' => $supplierId,
+                'suku_cadang_kode' => $code,
+                'suku_cadang_nama' => $name,
+                'suku_cadang_kategori' => $kat,
+                'suku_cadang_satuan' => $sat,
+                'suku_cadang_stok_total' => rand(5, 150),
+                'suku_cadang_reorder_point' => rand(15, 30),
+                'suku_cadang_stok_minimum' => rand(5, 10),
+                'suku_cadang_created_at' => Carbon::now()->subDays(rand(10, 50)),
+                'suku_cadang_updated_at' => Carbon::now(),
+            ]);
+        }
+
+        // 13. Buat Notifikasi ROP untuk suku cadang yang stoknya sudah di bawah ROP
+        $belowRop = DB::table('suku_cadang')
+            ->whereNull('suku_cadang_deleted_at')
+            ->whereRaw('suku_cadang_stok_total <= suku_cadang_reorder_point')
+            ->get();
+
+        foreach ($belowRop as $item) {
+            DB::table('notifikasi_rop')->insert([
+                'suku_cadang_id'      => $item->suku_cadang_id,
+                'rop_stok_saat_notif' => $item->suku_cadang_stok_total,
+                'rop_rop_saat_notif'  => $item->suku_cadang_reorder_point,
+                'rop_sudah_ditangani' => false,
+                'rop_created_at'      => Carbon::now(),
+                'rop_updated_at'      => Carbon::now(),
+            ]);
+        }
     }
 }

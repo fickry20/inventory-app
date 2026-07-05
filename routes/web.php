@@ -55,26 +55,30 @@ Route::middleware('auth')->group(function () {
     // ─── SPV Only ──────────────────────────────────────────────────────────
     Route::middleware('role:spv')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('users', \App\Http\Controllers\UserController::class);
+        Route::resource('users', \App\Http\Controllers\UserController::class)->except(['show']);
         Route::get('/laporan', [\App\Http\Controllers\LaporanController::class, 'index'])->name('laporan.index');
-        Route::resource('perusahaan-tujuan', \App\Http\Controllers\PerusahaanTujuanController::class);
+        Route::resource('perusahaan-tujuan', \App\Http\Controllers\PerusahaanTujuanController::class)->except(['show']);
     });
 
     // ─── Shared SPV & Admin Gudang ──────────────────────────────────────────
     Route::middleware('role:spv,admin_gudang')->group(function () {
-        Route::resource('transaksi-masuk', TransaksiMasukController::class);
-        Route::resource('transaksi-keluar', TransaksiKeluarController::class);
+        Route::resource('transaksi-masuk', TransaksiMasukController::class)->except(['show']);
+        Route::resource('transaksi-keluar', TransaksiKeluarController::class)->except(['show']);
         Route::get('/transaksi-keluar/{id}/cetak-sj', [TransaksiKeluarController::class, 'cetakSj'])->name('transaksi-keluar.cetak-sj');
     });
 
     // ─── Staf Inventory Only ────────────────────────────────────────────────
     Route::middleware('role:staf_inventory')->group(function () {
-        Route::resource('supplier', SupplierController::class);
+        Route::resource('supplier', SupplierController::class)->except(['show']);
         Route::post('/supplier/{supplier_id}/drivers', [\App\Http\Controllers\DriverController::class, 'store'])->name('drivers.store');
         Route::put('/drivers/{id}', [\App\Http\Controllers\DriverController::class, 'update'])->name('drivers.update');
         Route::delete('/drivers/{id}', [\App\Http\Controllers\DriverController::class, 'destroy'])->name('drivers.destroy');
-        Route::resource('kendaraan', KendaraanController::class);
-        Route::resource('suku-cadang', SukuCadangController::class);
+        Route::resource('kendaraan', KendaraanController::class)->except(['show']);
+        Route::resource('suku-cadang', SukuCadangController::class)->except(['show']);
+    });
+
+    // ─── Shared ROP Alerts ──────────────────────────────────────────────────
+    Route::middleware('role:spv,staf_inventory,admin_gudang')->group(function () {
         Route::get('/notifikasi-rop', [NotifikasiRopController::class, 'index'])->name('notifikasi-rop.index');
         Route::post('/notifikasi-rop/{id}/resolve', [NotifikasiRopController::class, 'resolve'])->name('notifikasi-rop.resolve');
     });

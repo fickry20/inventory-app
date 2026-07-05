@@ -59,6 +59,17 @@
             </a>
         </li>
 
+        <!-- Nav Item - Peringatan ROP -->
+        <li class="nav-item {{ Request::routeIs('notifikasi-rop.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('notifikasi-rop.index') }}">
+                <i class="fas fa-fw fa-exclamation-triangle"></i>
+                <span>Peringatan ROP</span>
+                @if($activeRopAlertsCount > 0)
+                    <span class="badge badge-danger ml-1">{{ $activeRopAlertsCount }}</span>
+                @endif
+            </a>
+        </li>
+
         <!-- Nav Item - Log Aktivitas -->
         <li class="nav-item {{ Request::routeIs('activity-log.index') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('activity-log.index') }}">
@@ -151,6 +162,17 @@
             <a class="nav-link" href="{{ route('transaksi-keluar.index') }}">
                 <i class="fas fa-fw fa-upload"></i>
                 <span>Barang Keluar</span>
+            </a>
+        </li>
+
+        <!-- Nav Item - Peringatan ROP -->
+        <li class="nav-item {{ Request::routeIs('notifikasi-rop.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('notifikasi-rop.index') }}">
+                <i class="fas fa-fw fa-exclamation-triangle"></i>
+                <span>Peringatan ROP</span>
+                @if($activeRopAlertsCount > 0)
+                    <span class="badge badge-danger ml-1">{{ $activeRopAlertsCount }}</span>
+                @endif
             </a>
         </li>
 

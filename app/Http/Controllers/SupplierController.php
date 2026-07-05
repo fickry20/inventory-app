@@ -17,8 +17,8 @@ class SupplierController extends Controller
         $suppliers = Supplier::query()
             ->when($search, function ($query, $search) {
                 $query->where('supplier_nama', 'like', "%{$search}%")
-                    ->orWhere('supplier_plat_kendaraan', 'like', "%{$search}%")
-                    ->orWhere('supplier_nama_driver', 'like', "%{$search}%");
+                    ->orWhere('supplier_kontak', 'like', "%{$search}%")
+                    ->orWhere('supplier_alamat', 'like', "%{$search}%");
             })
             ->latest('supplier_created_at')
             ->paginate(10)
