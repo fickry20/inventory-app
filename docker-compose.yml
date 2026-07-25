@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+    # Service Laravel
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8000:80"
+        environment:
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_DATABASE=inventory_db
+            - DB_USERNAME=root
+            - DB_PASSWORD=secret
+        depends_on:
+            - db
+
+    # Service Database MySQL
+    db:
+        image: mysql:8.0
+        container_name: mysql_inventory
+        environment:
+            MYSQL_DATABASE: inventory_db
+            MYSQL_ROOT_PASSWORD: secret
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+
+volumes:
+    mysql_data:
