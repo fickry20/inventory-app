@@ -25,18 +25,3 @@ Project ini dikembangkan sebagai bagian dari Tugas Akhir / Skripsi.
 - **CDN & Security:** Cloudflare (Proxy, SSL, WAF)
 
 ---
-
-## 💻 Cara Menjalankan Project di Lokal (Local Development)
-
-Project ini sudah sepenuhnya di-containerize dengan **Docker**, sehingga kamu tidak perlu menginstall PHP/Nginx/MySQL secara terpisah di mesin lokal.
-
-### Prasyarat
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) sudah terinstall dan berjalan di komputer/laptop.
-- [Git](https://git-scm.com/)
-
-### Langkah Instalasi
-
-1. **Clone Repository ini:**
-   ```bash
-   git clone [https://github.com/username-kamu/inventory-app.git](https://github.com/username-kamu/inventory-app.git)
-   cd inventory-app
