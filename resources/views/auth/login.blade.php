@@ -53,21 +53,21 @@
 
                                 <div class="form-group">
                                     <label for="users_email" class="text-gray-700 font-weight-bold small">
-                                        Email Address
+                                        Email Address / Username
                                     </label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text bg-white border-right-0">
-                                                <i class="fas fa-envelope text-gray-400"></i>
+                                                <i class="fas fa-user text-gray-400"></i>
                                             </span>
                                         </div>
                                         <input
                                             id="users_email"
-                                            type="email"
+                                            type="text"
                                             class="form-control border-left-0 @error('users_email') is-invalid @enderror"
                                             name="users_email"
                                             value="{{ old('users_email') }}"
-                                            placeholder="Masukkan email Anda..."
+                                            placeholder="Masukkan email atau username Anda..."
                                             required
                                             autofocus>
                                         @error('users_email')

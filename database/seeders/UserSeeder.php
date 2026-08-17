@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
+        $users = [
             [
                 'users_nik'             => '3201010101010001',
                 'users_username'        => 'admin_gudang',
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             [
                 'users_nik'             => '3201010101010002',
                 'users_username'        => 'staf_inventory',
-                'users_email'           => 'staf.inventory@example.com',
+                'users_email'           => 'staf_inventory@example.com',
                 'users_password_hash'   => Hash::make('password123'),
                 'users_jabatan'         => 'Staf Inventory',
                 'users_nomor_telepon'   => '081234567891',
@@ -39,7 +39,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'users_nik'             => '3201010101010003',
-                'users_username'        => 'spv_user',
+                'users_username'        => 'spv',
                 'users_email'           => 'spv@example.com',
                 'users_password_hash'   => Hash::make('password123'),
                 'users_jabatan'         => 'Supervisor',
@@ -48,6 +48,13 @@ class UserSeeder extends Seeder
                 'users_created_at'      => Carbon::now(),
                 'users_updated_at'      => Carbon::now(),
             ],
-        ]);
+        ];
+
+        foreach ($users as $userData) {
+            DB::table('users')->updateOrInsert(
+                ['users_email' => $userData['users_email']],
+                $userData
+            );
+        }
     }
 }

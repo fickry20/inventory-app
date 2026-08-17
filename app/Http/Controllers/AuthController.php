@@ -31,27 +31,31 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'users_email'         => ['required', 'email'],
+            'users_email'         => ['required', 'string'],
             'users_password_hash' => ['required', 'string', 'min:6'],
         ], [
-            'users_email.required'         => 'Email wajib diisi.',
-            'users_email.email'            => 'Format email tidak valid.',
+            'users_email.required'         => 'Email atau username wajib diisi.',
             'users_password_hash.required' => 'Password wajib diisi.',
             'users_password_hash.min'      => 'Password minimal 6 karakter.',
         ]);
 
-        $user = User::where('users_email', $request->users_email)->first();
+        $loginInput = $request->users_email;
+
+        // Cari berdasarkan email ATAU username
+        $user = User::where('users_email', $loginInput)
+            ->orWhere('users_username', $loginInput)
+            ->first();
 
         if (!$user) {
             return back()
                 ->withInput($request->only('users_email'))
-                ->with('error', 'Email atau password salah.');
+                ->with('error', 'Email/Username atau password salah.');
         }
 
         if (!Hash::check($request->users_password_hash, $user->users_password_hash)) {
             return back()
                 ->withInput($request->only('users_email'))
-                ->with('error', 'Email atau password salah.');
+                ->with('error', 'Email/Username atau password salah.');
         }
 
         Auth::login($user, $request->boolean('remember'));
